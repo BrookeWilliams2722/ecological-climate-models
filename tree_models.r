@@ -52,3 +52,6 @@ Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_pre
 Data_Final <- TreeData %>% filter(include_site == 1) %>% dplyr::select(all_of(Species$PATNLabel), all_of(Covariates))
 
 # fit regression trees
+
+# test using GitKraken 
+
