@@ -51,7 +51,55 @@ Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_pre
 # finalise data for model fitting
 Data_Final <- TreeData %>% filter(include_site == 1) %>% dplyr::select(all_of(Species$PATNLabel), all_of(Covariates))
 
+# copy data as.data.frame
+data_trees <- as.data.frame(Data_Final)
+
+# turn all species names to integer 
+data_trees[1:15] <- lapply(data_trees[1:15], as.integer)
+
 # fit regression trees
 
-# test using GitKraken 
+trees.tc5.lr005.corygumm <- gbm.step(data=data_trees, 
+                             gbm.x = 16:33,
+                             gbm.y = 1,
+                             family = "bernoulli",
+                             tree.complexity = 5,
+                             learning.rate = 0.005,
+                             bag.fraction = 0.75)
+
+trees.tc5.lr01.corygumm <- gbm.step(data=data_trees, 
+                                     gbm.x = 16:33,
+                                     gbm.y = 1,
+                                     family = "bernoulli",
+                                     tree.complexity = 5,
+                                     learning.rate = 0.01,
+                                     bag.fraction = 0.75)
+
+trees.tc5.lr05.corygumm <- gbm.step(data=data_trees, 
+                                    gbm.x = 16:33,
+                                    gbm.y = 1,
+                                    family = "bernoulli",
+                                    tree.complexity = 5,
+                                    learning.rate = 0.05,
+                                    bag.fraction = 0.75)
+
+trees.tc5.lr1.corygumm <- gbm.step(data=data_trees, 
+                                    gbm.x = 16:33,
+                                    gbm.y = 1,
+                                    family = "bernoulli",
+                                    tree.complexity = 5,
+                                    learning.rate = 0.1,
+                                    bag.fraction = 0.75)
+
+
+
+
+
+
+
+
+
+
+
+
 
