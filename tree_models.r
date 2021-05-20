@@ -244,380 +244,401 @@ main_statistics_1_2 <- melt(lapply(lapply(lapply(results_final,"[[", 1),"[[",c("
   pivot_wider(names_from = L2, values_from = value)) %>% 
   relocate(L1)
 
+# other tests
+
+ test <- results_final %>% flatten() %>% flatten() 
+ test[names(test) %in% c("gbm.call","cv.statistics")]
+ 
+ test.2 <- as.data.frame(test[["gbm.call"]][c("best.trees", "tree.complexity", "learning.rate")]) # this gets the data I want, but not for all the list 
+ 
+ 
+ results_test <- data.frame()
+ 
+ for (i in 1:length(test)) {
+   results_test() <- test[i][["gbm.call"]][c("best.trees", "tree.complexity", "learning.rate")]
+          }
+   
+ lapply(test, function(x) x[["gbm.call"]][c("best.trees", "tree.complexity", "learning.rate")])
+ 
+ lapply(lapply(lapply(test,"[[", 1),"[[",c("gbm.call")),"[",c("best.trees","tree.complexity","learning.rate"))
+
+
+ 
+ 
 # the not great way ----
 
 
 # sp 1
-test.results.sp1.gbm <- as.data.frame(results_final[["sp1"]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[["sp1"]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
- # mutate(spp = "sp1")
+test.results.sp1.gbm <- as.data.frame(results_final[[1]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
+  bind_rows(as.data.frame(results_final[[1]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
+ # mutate(spp = 1)
  
-test.results.sp1.cvstats <- as.data.frame(results_final[["sp1"]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[["sp1"]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+test.results.sp1.cvstats <- as.data.frame(results_final[[1]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
+  bind_rows(as.data.frame(results_final[[1]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
   bind_cols(test.results.sp1.gbm)
 
 #sp 2
 
-test.results.sp2.gbm <- as.data.frame(results_final[["sp2"]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[["sp2"]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp2"]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp2"]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp2"]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp2"]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp2"]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name" )])) %>% 
-  bind_rows(as.data.frame(results_final[["sp2"]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp2"]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp2"]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # mutate(spp = "sp2")
-test.results.sp2.cvstats <- as.data.frame(results_final[["sp2"]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[["sp2"]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp2"]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp2"]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp2"]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp2"]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp2"]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp2"]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp2"]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp2"]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+test.results.sp2.gbm <- as.data.frame(results_final[[2]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
+  bind_rows(as.data.frame(results_final[[2]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[2]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[2]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[2]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[2]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[2]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name" )])) %>% 
+  bind_rows(as.data.frame(results_final[[2]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[2]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[2]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
+  # mutate(spp = 2)
+test.results.sp2.cvstats <- as.data.frame(results_final[[2]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
+  bind_rows(as.data.frame(results_final[[2]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[2]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[2]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[2]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[2]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[2]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[2]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[2]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[2]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
   bind_cols(test.results.sp2.gbm)
 
 
 #sp 3
 
-test.results.sp3.gbm <- as.data.frame(results_final[["sp3"]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[["sp3"]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp3"]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp3"]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp3"]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp3"]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp3"]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp3"]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp3"]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp3"]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # mutate(spp = "sp3")
-test.results.sp3.cvstats <- as.data.frame(results_final[["sp3"]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[["sp3"]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp3"]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp3"]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp3"]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp3"]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp3"]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp3"]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp3"]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp3"]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+test.results.sp3.gbm <- as.data.frame(results_final[[3]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
+  bind_rows(as.data.frame(results_final[[3]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[3]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[3]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[3]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[3]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[3]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[3]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[3]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[3]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
+  # mutate(spp = 3)
+test.results.sp3.cvstats <- as.data.frame(results_final[[3]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
+  bind_rows(as.data.frame(results_final[[3]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[3]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[3]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[3]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[3]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[3]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[3]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[3]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[3]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
   bind_cols(test.results.sp3.gbm)
 
 # sp 4
 
 
-test.results.sp4.gbm <- as.data.frame(results_final[["sp4"]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[["sp4"]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp4"]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp4"]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp4"]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp4"]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp4"]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp4"]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp4"]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp4"]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # mutate(spp = "sp4")
-test.results.sp4.cvstats <- as.data.frame(results_final[["sp4"]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[["sp4"]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp4"]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp4"]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp4"]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp4"]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp4"]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp4"]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp4"]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp4"]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+test.results.sp4.gbm <- as.data.frame(results_final[[4]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
+  bind_rows(as.data.frame(results_final[[4]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[4]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[4]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[4]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[4]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[4]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[4]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[4]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[4]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
+  # mutate(spp = 4)
+test.results.sp4.cvstats <- as.data.frame(results_final[[4]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
+  bind_rows(as.data.frame(results_final[[4]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[4]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[4]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[4]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[4]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[4]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[4]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[4]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[4]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
   bind_cols(test.results.sp4.gbm)
 
 
 # sp 5
 
 
-test.results.sp5.gbm <- as.data.frame(results_final[["sp5"]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[["sp5"]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp5"]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp5"]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp5"]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp5"]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp5"]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp5"]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp5"]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp5"]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # mutate(spp = "sp5")
-test.results.sp5.cvstats <- as.data.frame(results_final[["sp5"]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[["sp5"]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp5"]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp5"]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp5"]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp5"]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp5"]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp5"]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp5"]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp5"]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+test.results.sp5.gbm <- as.data.frame(results_final[[5]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
+  bind_rows(as.data.frame(results_final[[5]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[5]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[5]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[5]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[5]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[5]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[5]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[5]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[5]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
+  # mutate(spp = 5)
+test.results.sp5.cvstats <- as.data.frame(results_final[[5]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
+  bind_rows(as.data.frame(results_final[[5]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[5]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[5]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[5]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[5]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[5]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[5]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[5]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[5]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
   bind_cols(test.results.sp5.gbm)
 
 # sp 6
 
 
-test.results.sp6.gbm <- as.data.frame(results_final[["sp6"]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[["sp6"]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp6"]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp6"]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp6"]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp6"]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp6"]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp6"]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp6"]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp6"]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # mutate(spp = "sp6")
-test.results.sp6.cvstats <- as.data.frame(results_final[["sp6"]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[["sp6"]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp6"]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp6"]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp6"]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp6"]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp6"]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp6"]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp6"]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp6"]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+test.results.sp6.gbm <- as.data.frame(results_final[[6]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
+  bind_rows(as.data.frame(results_final[[6]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[6]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[6]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[6]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[6]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[6]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[6]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[6]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[6]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
+  # mutate(spp = 6)
+test.results.sp6.cvstats <- as.data.frame(results_final[[6]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
+  bind_rows(as.data.frame(results_final[[6]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[6]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[6]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[6]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[6]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[6]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[6]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[6]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[6]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
   bind_cols(test.results.sp6.gbm)
 
 # sp 7
 
 
-test.results.sp7.gbm <- as.data.frame(results_final[["sp7"]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[["sp7"]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp7"]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp7"]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp7"]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp7"]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp7"]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp7"]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # bind_rows(as.data.frame(results_final[["sp7"]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp7"]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # mutate(spp = "sp7")
-test.results.sp7.cvstats <- as.data.frame(results_final[["sp7"]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[["sp7"]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp7"]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp7"]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp7"]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp7"]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp7"]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp7"]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp7"]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp7"]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+test.results.sp7.gbm <- as.data.frame(results_final[[7]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
+  bind_rows(as.data.frame(results_final[[7]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[7]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[7]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[7]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[7]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[7]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[7]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
+  # bind_rows(as.data.frame(results_final[[7]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[7]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # mutate(spp = 7)
+test.results.sp7.cvstats <- as.data.frame(results_final[[7]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
+  bind_rows(as.data.frame(results_final[[7]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[7]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[7]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[7]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[7]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[7]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[7]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[7]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[7]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
   bind_cols(test.results.sp7.gbm)
 
 # sp 8
 
 
-test.results.sp8.gbm <- as.data.frame(results_final[["sp8"]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[["sp8"]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp8"]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp8"]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # bind_rows(as.data.frame(results_final[["sp8"]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp8"]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp8"]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp8"]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp8"]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp8"]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # mutate(spp = "sp8")
-test.results.sp8.cvstats <- as.data.frame(results_final[["sp8"]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[["sp8"]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp8"]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp8"]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp8"]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp8"]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp8"]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp8"]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp8"]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp8"]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+test.results.sp8.gbm <- as.data.frame(results_final[[8]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
+  bind_rows(as.data.frame(results_final[[8]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[8]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[8]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
+  # bind_rows(as.data.frame(results_final[[8]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[8]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[8]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[8]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[8]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[8]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # mutate(spp = 8)
+test.results.sp8.cvstats <- as.data.frame(results_final[[8]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
+  bind_rows(as.data.frame(results_final[[8]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[8]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[8]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[8]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[8]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[8]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[8]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[8]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[8]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
   bind_cols(test.results.sp8.gbm)
 
 # sp 9
 
 
-test.results.sp9.gbm <- as.data.frame(results_final[["sp9"]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[["sp9"]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp9"]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp9"]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # bind_rows(as.data.frame(results_final[["sp9"]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp9"]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp9"]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp9"]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp9"]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp9"]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # mutate(spp = "sp9")
-test.results.sp9.cvstats <- as.data.frame(results_final[["sp9"]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[["sp9"]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp9"]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp9"]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp9"]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp9"]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp9"]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp9"]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp9"]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp9"]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+test.results.sp9.gbm <- as.data.frame(results_final[[9]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
+  bind_rows(as.data.frame(results_final[[9]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[9]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[9]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
+  # bind_rows(as.data.frame(results_final[[9]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[9]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[9]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[9]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[9]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[9]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # mutate(spp = 9)
+test.results.sp9.cvstats <- as.data.frame(results_final[[9]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
+  bind_rows(as.data.frame(results_final[[9]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[9]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[9]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[9]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[9]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[9]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[9]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[9]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[9]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
   bind_cols(test.results.sp9.gbm)
 
 # sp 10
 
 
-test.results.sp10.gbm <- as.data.frame(results_final[["sp10"]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[["sp10"]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # bind_rows(as.data.frame(results_final[["sp10"]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp10"]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp10"]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp10"]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp10"]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp10"]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp10"]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp10"]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # mutate(spp = "sp10")
-test.results.sp10.cvstats <- as.data.frame(results_final[["sp10"]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[["sp10"]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp10"]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp10"]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp10"]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp10"]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp10"]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp10"]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp10"]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp10"]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+test.results.sp10.gbm <- as.data.frame(results_final[[10]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
+  bind_rows(as.data.frame(results_final[[10]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
+  # bind_rows(as.data.frame(results_final[[10]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[10]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[10]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[10]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[10]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[10]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[10]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[10]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # mutate(spp = 10)
+test.results.sp10.cvstats <- as.data.frame(results_final[[10]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
+  bind_rows(as.data.frame(results_final[[10]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[10]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[10]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[10]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[10]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[10]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[10]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[10]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[10]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
   bind_cols(test.results.sp10.gbm)
 
 # sp 11
 
 
-test.results.sp11.gbm <- as.data.frame(results_final[["sp11"]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[["sp11"]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp11"]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp11"]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # bind_rows(as.data.frame(results_final[["sp11"]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp11"]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp11"]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp11"]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp11"]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp11"]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # mutate(spp = "sp11")
-test.results.sp11.cvstats <- as.data.frame(results_final[["sp11"]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[["sp11"]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp11"]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp11"]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp11"]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp11"]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp11"]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp11"]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp11"]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp11"]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+test.results.sp11.gbm <- as.data.frame(results_final[[11]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
+  bind_rows(as.data.frame(results_final[[11]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[11]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[11]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
+  # bind_rows(as.data.frame(results_final[[11]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[11]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[11]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[11]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[11]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[11]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # mutate(spp = 11)
+test.results.sp11.cvstats <- as.data.frame(results_final[[11]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
+  bind_rows(as.data.frame(results_final[[11]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[11]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[11]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[11]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[11]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[11]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[11]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[11]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[11]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
   bind_cols(test.results.sp11.gbm)
 
 # sp 12
 
 
-test.results.sp12.gbm <- as.data.frame(results_final[["sp12"]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[["sp12"]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # bind_rows(as.data.frame(results_final[["sp12"]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp12"]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp12"]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp12"]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp12"]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp12"]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp12"]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp12"]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # mutate(spp = "sp12")
-test.results.sp12.cvstats <- as.data.frame(results_final[["sp12"]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[["sp12"]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp12"]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp12"]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp12"]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp12"]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp12"]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp12"]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp12"]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp12"]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+test.results.sp12.gbm <- as.data.frame(results_final[[12]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
+  bind_rows(as.data.frame(results_final[[12]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
+  # bind_rows(as.data.frame(results_final[[12]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[12]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[12]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[12]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[12]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[12]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[12]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[12]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # mutate(spp = 12)
+test.results.sp12.cvstats <- as.data.frame(results_final[[12]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
+  bind_rows(as.data.frame(results_final[[12]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[12]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[12]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[12]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[12]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[12]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[12]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[12]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[12]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
   bind_cols(test.results.sp12.gbm)
 
 # sp 13
 
 
-test.results.sp13.gbm <- as.data.frame(results_final[["sp13"]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[["sp13"]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp13"]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp13"]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # bind_rows(as.data.frame(results_final[["sp13"]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp13"]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp13"]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp13"]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp13"]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp13"]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # mutate(spp = "sp13")
-test.results.sp13.cvstats <- as.data.frame(results_final[["sp13"]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[["sp13"]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp13"]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp13"]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp13"]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp13"]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp13"]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp13"]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp13"]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp13"]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+test.results.sp13.gbm <- as.data.frame(results_final[[13]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
+  bind_rows(as.data.frame(results_final[[13]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[13]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[13]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
+  # bind_rows(as.data.frame(results_final[[13]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[13]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[13]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[13]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[13]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[13]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # mutate(spp = 13)
+test.results.sp13.cvstats <- as.data.frame(results_final[[13]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
+  bind_rows(as.data.frame(results_final[[13]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[13]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[13]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[13]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[13]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[13]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[13]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[13]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[13]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
   bind_cols(test.results.sp13.gbm)
 
 # sp 14
 
 
-test.results.sp14.gbm <- as.data.frame(results_final[["sp14"]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[["sp14"]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp14"]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp14"]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # bind_rows(as.data.frame(results_final[["sp14"]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp14"]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp14"]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp14"]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp14"]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp14"]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # mutate(spp = "sp14")
-test.results.sp14.cvstats <- as.data.frame(results_final[["sp14"]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[["sp14"]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp14"]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[["sp14"]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp14"]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp14"]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp14"]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp14"]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp14"]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp14"]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+test.results.sp14.gbm <- as.data.frame(results_final[[14]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
+  bind_rows(as.data.frame(results_final[[14]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[14]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  bind_rows(as.data.frame(results_final[[14]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
+  # bind_rows(as.data.frame(results_final[[14]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[14]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[14]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[14]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[14]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[14]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # mutate(spp = 14)
+test.results.sp14.cvstats <- as.data.frame(results_final[[14]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
+  bind_rows(as.data.frame(results_final[[14]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[14]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  bind_rows(as.data.frame(results_final[[14]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[14]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[14]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[14]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[14]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[14]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[14]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
   bind_cols(test.results.sp14.gbm)
 
 # sp 15
 
 
-test.results.sp15.gbm <- as.data.frame(results_final[["sp15"]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[["sp15"]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # bind_rows(as.data.frame(results_final[["sp15"]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp15"]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp15"]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp15"]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp15"]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp15"]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp15"]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp15"]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # mutate(spp = "sp15")
-test.results.sp15.cvstats <- as.data.frame(results_final[["sp15"]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[["sp15"]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp15"]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp15"]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp15"]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp15"]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp15"]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp15"]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp15"]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[["sp15"]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+test.results.sp15.gbm <- as.data.frame(results_final[[15]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
+  bind_rows(as.data.frame(results_final[[15]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
+  # bind_rows(as.data.frame(results_final[[15]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[15]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[15]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[15]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[15]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[15]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[15]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # bind_rows(as.data.frame(results_final[[15]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
+  # mutate(spp = 15)
+test.results.sp15.cvstats <- as.data.frame(results_final[[15]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
+  bind_rows(as.data.frame(results_final[[15]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[15]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[15]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[15]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[15]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[15]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[15]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[15]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
+  # bind_rows(as.data.frame(results_final[[15]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
   bind_cols(test.results.sp15.gbm)
 
 # ----
@@ -640,5 +661,91 @@ optimal_results <- left_join(optimal, main_statistics_allspp, by = c("response.n
 save(optimal_results, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\optimal_results.RData")
 
 write.csv(optimal_results, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\optimal_results.csv")
+
+# extract optimal models from results_final
+
+eucabanc <- results_final[[1]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
+save(eucabanc, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucabanc.RData")
+eucabosi <- results_final[[2]][[1]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
+save(eucabosi, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucabosi.RData")
+eucadean <- results_final[[3]][[1]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
+save(eucadean, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucadean.RData")
+eucagran <- results_final[[4]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
+save(eucagran, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucagran.RData")
+eucalong <- results_final[[5]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
+save(eucalong, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucalong.RData")
+eucapani <- results_final[[6]][[3]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
+save(eucapani, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucapani.RData")
+corygumm <- results_final[[7]][[8]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
+save(corygumm, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\corygumm.RData")
+eucaprop <- results_final[[8]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
+save(eucaprop, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaprop.RData")
+eucaresi <- results_final[[9]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
+save(eucaresi, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaresi.RData")
+eucarobu <- results_final[[10]][[1]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
+save(eucarobu, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucarobu.RData")
+eucasali <- results_final[[11]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
+save(eucasali, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucasali.RData")
+eucatric <- results_final[[12]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
+save(eucatric, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucatric.RData")
+melaquin <- results_final[[13]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
+save(melaquin, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\melaquin.RData")
+eucaeuge <- results_final[[14]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
+save(eucaeuge, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaeuge.RData")
+eucaparr <- results_final[[15]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
+save(eucaparr, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaparr.RData")
+
+# to obtain the importance of the different variables 
+
+summary(eucabanc)
+eucabanc[["contributions"]]
+
+
+# obtain no variables to drop 
+
+eucabanc.simp <- gbm.simplify(eucabanc, n.drops = 10)
+save(eucabanc.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucabanc.simp.RData")
+eucabosi.simp <- gbm.simplify(eucabosi, n.drops = 10)
+save(eucabosi.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucabosi.simp.RData")
+eucadean.simp <- gbm.simplify(eucadean, n.drops = 10)
+save(eucadean.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucadean.simp.RData")
+
+# from here 
+eucagran.simp <- gbm.simplify(eucagran, n.drops = 10)
+save(eucagran.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucagran.simp.RData")
+eucalong.simp <- gbm.simplify(eucalong, n.drops = 10)
+save(eucalong.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucalong.simp.RData")
+eucapani.simp <- gbm.simplify(eucapani, n.drops = 10)
+save(eucapani.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucapani.simp.RData")
+corygumm.simp <- gbm.simplify(corygumm, n.drops = 10)
+save(corygumm.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\corygumm.simp.RData")
+eucaprop.simp <- gbm.simplify(eucaprop, n.drops = 10)
+save(eucaprop.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaprop.simp.RData")
+eucaresi.simp <- gbm.simplify(eucaresi, n.drops = 10)
+save(eucaresi.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaresi.simp.RData")
+eucarobu.simp <- gbm.simplify(eucarobu, n.drops = 10)
+save(eucarobu.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucarobu.simp.RData")
+eucasali.simp <- gbm.simplify(eucasali, n.drops = 10)
+save(eucasali.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucasali.simp.RData")
+eucatric.simp <- gbm.simplify(eucatric, n.drops = 10)
+save(eucatric.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucatric.simp.RData")
+melaquin.simp <- gbm.simplify(melaquin, n.drops = 10)
+save(melaquin.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\melaquin.simp.RData")
+eucaeuge.simp <- gbm.simplify(eucaeuge, n.drops = 10)
+save(eucaeuge.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaeuge.simp.RData")
+eucaparr.simp <- gbm.simplify(eucaparr, n.drops = 10)
+save(eucaparr.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaparr.simp.RData")
+
+# re-run models with variables dropped 
+
+
+                             
+
+
+
+
+
+
+
 
 
