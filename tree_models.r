@@ -863,18 +863,37 @@ corygumm_predict <- predict(baseline_list_17, corygumm.simp.simp, n.trees=corygu
 
 corygumm_predict_test <- predict(baseline_list_18, corygumm, n.trees=corygumm$gbm.call$best.trees, type="response") 
 
-# try the other option
+# predict using 'gmb.predict.grids' from Elith et al 2008
 
-baseline_list_17 <- as.data.frame(baseline_list_17, xy= TRUE)
+# turn the raster stack into a data.frame 
+baseline_list_17_df <- as.data.frame(baseline_list_17, xy= TRUE)
+save(baseline_list_17, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\baseline_list_df_17.RData")
+
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\baseline_list_17.RData")
+
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\corygumm.simp.simp.RData")
+
+# divide data frame into sections
+
+baseline_list_17_df_b <- baseline_list_17_df[1:5000, ]
+
+save(baseline_list_17_df_a, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\baseline_list_17_df_a.RData")
 
 
-corygum_predict_df <- gbm.predict.grids(corygumm.simp.simp, baseline_list_17, want.grids = T, sp.name = "corygum_preds_baseline",
-                                        num.col = 14159, num.row = 10487, cell.size = 100, plot = T)
+# try to increase the memory in R 
+
+gc()
+memory.limit(9999999999)
 
 
+corygum_pred_baseline_g <- gbm.predict.grids(corygumm.simp.simp, baseline_list_17_df_a, want.grids = T, sp.name = "null",
+                                        num.col = 500, num.row = 500, cell.size = 100, plot = T, preds2R = T, full.grid = T,
+                                        filepath = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\")
+head(baseline_list_17)
 
 
+corygum_pred_baseline_3 <- predict.gbm(corygumm.simp.simp, baseline_list_17_df,
+                     n.trees=corygumm.simp.simp$gbm.call$best.trees, type="response")
 
 
-
-
+rm(corygum_pred_baseline_2)
