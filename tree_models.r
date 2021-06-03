@@ -825,7 +825,7 @@ for(i in 1:length(files.baseline)) {
   baseline_list <- stack(files.baseline[i], baseline_list)
 }
 
-# ####
+#####
 
 drx_cory <- "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\input\\covariates_corygumm_baseline"
 files_baseline_cory <- list.files(path = drx_cory, pattern = "*.tif$", full.names = TRUE)
@@ -836,110 +836,33 @@ for(i in 1:length(files_baseline_cory)) {
   baseline_list_cory <- stack(files_baseline_cory[i], baseline_list_cory)
 }
 
+# add original data to the simplified model
 
-# predict using 'predict' function form raster package 
-corygumm_predict <- predict(baseline_list_17, corygumm.simp.simp, n.trees=corygumm.simp.simp$gbm.call$best.trees, type="response") 
+corygumm.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
+corygumm.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees                          
+eucabanc.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
+eucabosi.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
+eucadean.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
+eucaeuge.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
+eucagran.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
+eucalong.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
+eucapani.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
+eucaparr
+eucaprop.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
+eucaresi.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
+eucarobu.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
+eucasali.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
+eucatric.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
+melaquin
 
+# predict using 'predict' function form raster package
 
+corygumm_pred_baseline_18 <- predict(baseline_list, corygumm.simp.simp, n.trees=corygumm.simp.simp$gbm.call$best.trees,
+                                     type="response") 
 
-# predict using 'gmb.predict.grids' from Elith et al 2008
+corygumm_pred_baseline_17 <- predict(baseline_list_cory, corygumm.simp.simp, n.trees=corygumm.simp.simp$gbm.call$best.trees,
+                                     type="response")
 
-# turn the raster stack into a data.frame 
-baseline_list_17_df <- as.data.frame(baseline_list_17, xy= TRUE)
-save(baseline_list_17, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\baseline_list_df_17.RData")
-
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\baseline_list_17.RData")
-
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\corygumm.RData")
-
-# divide data frame into sections
-
-baseline_list_17_df_b <- baseline_list_17_df[1:5000, ]
-
-save(baseline_list_17_df_a, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\baseline_list_17_df_a.RData")
-
-
-
-
-# try to increase the memory in R 
-
-gc()
-memory.limit(9999999999)
-
-
-corygum_pred_baseline_g <- gbm.predict.grids(corygumm.simp.simp, baseline_list_17_df_a, want.grids = T, sp.name = "null",
-                                        num.col = 500, num.row = 500, cell.size = 100, plot = T, preds2R = T, full.grid = T,
-                                        filepath = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\")
-head(baseline_list_17)
+plot(corygumm_pred_baseline_17) 
 
 
-corygum_pred_baseline_3 <- predict.gbm(corygumm.simp.simp, baseline_list_17_df,
-                     n.trees=corygumm.simp.simp$gbm.call$best.trees, type="response")
-
-
-rm(corygum_pred_baseline_2)
-
-# create a new model without the variables that are not relevant 
-
-# list covariates
-Covariates_corygumm <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100",
-                "so_ph000_100", "so_soc000_100",
-                "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
-                "sp_slt000_100prop", "sp_snd000_100prop")
-
-# finalise data for model fitting
-Data_Final_corygumm <- TreeData %>% filter(include_site == 1) %>% dplyr::select(all_of(Species$PATNLabel), all_of(Covariates_corygumm))
-
-
-# copy data as.data.frame
-Data_Final_corygumm <- as.data.frame(Data_Final_corygumm)
-
-# turn all species names to integer 
-Data_Final_corygumm[1:15] <- lapply(Data_Final_corygumm[1:15], as.integer)
-
-# fit regression trees per spp ----
-
-# testing for sp 1 
-
-gbm_corygumm_simp <- gbm.fixed(data=Data_Final_corygumm, gbm.x = 16:32, gbm.y = 1,
-                         learning.rate = 0.05, tree.complexity = 5, n.trees = 3200)
-
-gbm_corygumm_simp$var.names
-
-corygumm.simp.simp$var.names
-
-names(baseline_list_17)
-
-# the test
-
-corygumm_predict_test_raster <- raster::predict(baseline_list_17, angaus.tc5.lr005,
-                                                n.trees=angaus.tc5.lr005$gbm.call$best.trees, type="response")
-                                                 
-
-angaus.tc5.lr005[["gbm.call"]][["dataframe"]] <- model.data
-
-baseline_list_17[[1]]
-
-
-corygumm.simp.simp$gbm.call$dataframe
- 
-data_modelo <- corygumm$gbm.call$dataframe
-
-gbm_corygumm_simp$gbm.call$dataframe
-
-corygumm$gbm.call$gbm.x
-
-corygumm.simp.simp$gbm.call$gbm.x
-
-
-test_model <- corygumm.simp.simp
-
-test_model_2 <- corygumm.simp.simp
-
-
-test_model_2 [["gbm.call"]][["dataframe"]] <- append(test_model_2, as.data.frame(data_modelo), 0)
-corygumm [["gbm.call"]][["dataframe"]]
-
-append(x, list(df), 0)
-
-test_model_2 [["gbm.call"]][["dataframe"]] <- data_modelo
