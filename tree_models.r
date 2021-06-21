@@ -1,3 +1,7 @@
+# using boosted regression trees to predict
+# distribution probabilities of 15 eucalyptus species across NSW
+# following Elith et al. 2008, A working guide to boosted regression trees 
+
 # load required libraries
 library(tidyverse)
 library(gbm)
@@ -5,10 +9,18 @@ library(dismo)
 library(reshape2)
 library(raster)
 library(rgdal)
-source("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\input\\brt.functions.R")
 
-# location of functions
-#source("functions.r")
+# set working directory
+
+setwd("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models")
+
+# load Elith et al modified functions from 'gbm' original functions   
+
+source("input/brt.functions.R")
+
+################################################################################
+# step 1 - get inputs ready for model fitting 
+################################################################################
 
 # load tree plot data
 TreeData <- read_csv(file = "input/tree_plot_data.csv")
@@ -55,7 +67,14 @@ Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_pre
 # finalise data for model fitting
 Data_Final <- TreeData %>% filter(include_site == 1) %>% dplyr::select(all_of(Species$PATNLabel), all_of(Covariates))
 
-###check total number of observations per spp ----
+# copy data as.data.frame
+data_trees <- as.data.frame(Data_Final)
+
+# turn all species names to integer 
+data_trees[1:15] <- lapply(data_trees[1:15], as.integer)
+
+#########################################################################
+### analyse input data - check total number of observations per spp ----
 no_trees <- Data_Final %>% 
   dplyr::select(all_of(Species$PATNLabel)) %>% 
   gather(key = "spp", value = "observation") %>% 
@@ -64,24 +83,39 @@ no_trees <- Data_Final %>%
   summarise(total_obs = n())
 ###----
 
-# copy data as.data.frame
-data_trees <- as.data.frame(Data_Final)
+######################################################################################################
+# step 2 - optimise the number of trees required in the gbm to obtain the minimum predictive deviance
+#          test different tree complexity and learning rate parameters following Elith et al. 2008
+######################################################################################################
 
-# turn all species names to integer 
-data_trees[1:15] <- lapply(data_trees[1:15], as.integer)
+# the list of species 
 
-# fit regression trees per spp ----
+# 1 Corygumm	Corymbia gummifera
+# 2 Eucabanc	Eucalyptus bancroftii
+# 3 Eucabosi	Eucalyptus bosistoana
+# 4 Eucadean	Eucalyptus deanei
+# 5 Eucaeuge	Eucalyptus eugenioides
+# 6 Eucagran	Eucalyptus grandis
+# 7 Eucalong	Eucalyptus longifolia
+# 8 Eucapani	Eucalyptus paniculata
+# 9 Eucaparr	Eucalyptus parramattensis
+# 10 Eucaprop	Eucalyptus propinqua
+# 11 Eucaresi	Eucalyptus resinifera
+# 12 Eucarobu	Eucalyptus robusta
+# 13 Eucasali	Eucalyptus saligna
+# 14 Eucatric	Eucalyptus tricarpa
+# 15 Melaquin	Melaleuca quinquenervia
 
+# tests for each spp ----
 # testing for sp 1 
 argssp1 <- list(tree.complexity = c(5,5,4,4,3,3,2,2,1,1), learning.rate = c(0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005)) 
 gbm.step.presp1 <- partial(gbm.step,
                            data = data_trees,
-                           gbm.x = 16:33,
-                           gbm.y = 1,
+                           gbm.x = 16:33, # the variables
+                           gbm.y = 1,     # the species 
                            family = "bernoulli",
                            bag.fraction = 0.75)
 results_sp1 <- pmap(argssp1, gbm.step.presp1)
-
 
 # testing for sp 2 
 argssp2 <- list(tree.complexity = c(5,5,4,4,3,3,2,2,1,1), learning.rate = c(0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005)) 
@@ -224,7 +258,6 @@ gbm.step.presp15 <- partial(gbm.step,
                             bag.fraction = 0.75)
 results_sp15 <- pmap(argssp15, gbm.step.presp15)
 
-
 # ----
 
 # create a list with all the results per spp
@@ -234,11 +267,12 @@ results_final <- list(results_sp1, results_sp2, results_sp3, results_sp4, result
 
 # save all results as R object and load again (to free the global environment)
 
-save(results_final, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\results_final.RData")
+save(results_final, file = "output/gbm/results_final.RData")
+load("output/gbm/results_final.RData")
 
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\results_final.RData")
-
-# extract $best.trees, $tree.complexity, $learning.rate, $deviance.mean, $deviance.se from all runs
+############################################################################################################################
+######## analyse results - extract $best.trees, $tree.complexity, $learning.rate, $deviance.mean, $deviance.se 
+########                   from all tests to identify the learning rate and tree complexity that delivered the lowest deviance 
 
 main_statistics_1_2 <- melt(lapply(lapply(lapply(results_final,"[[", 1),"[[",c("gbm.call")),"[",c("best.trees","tree.complexity","learning.rate"))) %>% 
   pivot_wider(names_from = L2, values_from = value) %>% 
@@ -658,11 +692,10 @@ optimal <- main_statistics_allspp %>%
 
 optimal_results <- left_join(optimal, main_statistics_allspp, by = c("response.name", "deviance.mean"))
 
-# save results 
+# save summary of the tree complexity and learning rate that result in the minimum deviance 
 
-save(optimal_results, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\optimal_results.RData")
-
-write.csv(optimal_results, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\optimal_results.csv")
+save(optimal_results, file = "output/gbm/optimal_results.RData")
+write.csv(optimal_results, file = "output/gbm/optimal_results.csv")
 
 # extract optimal models from results_final
 
@@ -796,49 +829,83 @@ save(eucatric.simp.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_clim
 
 # load simplified models
 
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\corygumm.simp.simp.RData")                             
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucabanc.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucabosi.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucadean.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaeuge.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucagran.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucalong.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucapani.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaparr.RData") # no variables to drop for eucaparr 
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaprop.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaresi.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucarobu.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucasali.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucatric.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\melaquin.RData") # no variables to drop for melaquin 
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\corygumm.simp.simp.RData")                             
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucabanc.simp.simp.RData")
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucabosi.simp.simp.RData")
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucadean.simp.simp.RData")
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucaeuge.simp.simp.RData")
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucagran.simp.simp.RData")
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucalong.simp.simp.RData")
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucapani.simp.simp.RData")
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucaparr.RData") # no variables to drop for eucaparr 
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucaprop.simp.simp.RData")
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucaresi.simp.simp.RData")
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucarobu.simp.simp.RData")
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucasali.simp.simp.RData")
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucatric.simp.simp.RData")
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\melaquin.RData") # no variables to drop for melaquin 
 
-# make predictions
+# make predictions using 'predict' function form raster package
 
-# read the tif files and save them as a raster stack 
+# save all simplified models as a list
+models_simp <- list(corygumm.simp.simp,eucabanc.simp.simp,eucabosi.simp.simp,eucadean.simp.simp,eucaeuge.simp.simp,
+                    eucagran.simp.simp,eucalong.simp.simp,eucapani.simp.simp,eucaparr,eucaprop.simp.simp,eucaresi.simp.simp,
+                    eucarobu.simp.simp,eucasali.simp.simp,eucatric.simp.simp,melaquin)
+save(models_simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\models_simp.RData")
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\models_simp.RData")
+
+
+# to obtain relative importance of variables
+
+# to obtain the relative contribution of the different variables 
+
+models_simp[[1]][["contributions"]]
+test <- models_simp[[10]][["contributions"]]
+sum(test$rel.inf)
+
+
+names(models_simp) <- species_names
+
+contributions_models_simp <- melt(lapply(models_simp, '[', "contributions")) %>% 
+  pivot_wider(names_from = var, values_from = value) %>% 
+  pivot_longer(cols = cw_precipwp:dl_strmdstge2, names_to = "variables", values_to = "relative_importance")
+
+
+top_contributions <- contributions_models_simp %>% 
+  dplyr::select(-c(variable, L2)) %>% 
+  group_by(L1) %>% 
+  slice_max(relative_importance, n=3)
+
+frequencies <- top_contributions %>% 
+  group_by(variables) %>% 
+  summarise(frequencies = n())
+
+
+all_frequencies <- contributions_models_simp %>% 
+  group_by(variables) %>% 
+  subset(!is.na(relative_importance)) %>% 
+  summarise(frequencies = n())
+
+
+# run the predictions for the baseline scenario
+
+# read the tif files (variables) and save them as a raster stack for the baseline scenario
 
 drx <- "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\input\\covariates_18_baseline"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-baseline_list <- stack() 
+baseline_list_18 <- stack() 
 
 for(i in 1:length(files.baseline)) { 
-  baseline_list <- stack(files.baseline[i], baseline_list)
+  baseline_list_18 <- stack(files.baseline[i], baseline_list_18)
 }
 
-#####
+save(baseline_list_18, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\baseline_list_18.RData")
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\baseline_list_18.RData")
 
-drx_cory <- "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\input\\covariates_corygumm_baseline"
-files_baseline_cory <- list.files(path = drx_cory, pattern = "*.tif$", full.names = TRUE)
+# add original data to the simplified model # check this in the code  ----
+# angaus.tc5.lr005.simp <- gbm.step(Anguilla_train, gbm.x=angaus.simp$pred.list[[1]], gbm.y=2, tree.complexity=5, learning.rate=0.005)
 
-baseline_list_cory <- stack() 
-
-for(i in 1:length(files_baseline_cory)) { 
-  baseline_list_cory <- stack(files_baseline_cory[i], baseline_list_cory)
-}
-
-# add original data to the simplified model
-
-corygumm.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
 corygumm.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees                          
 eucabanc.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
 eucabosi.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
@@ -854,15 +921,54 @@ eucarobu.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
 eucasali.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
 eucatric.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
 melaquin
+# ----
 
-# predict using 'predict' function form raster package
+# run all the predictions for the baseline scenario and save them as a raster stack 
 
-corygumm_pred_baseline_18 <- predict(baseline_list, corygumm.simp.simp, n.trees=corygumm.simp.simp$gbm.call$best.trees,
-                                     type="response") 
+species_names <- c("corygumm","eucabanc","eucabosi","eucadean","eucaeuge","eucagran","eucalong","eucapani","eucaparr","eucaprop","eucaresi",
+                      "eucarobu","eucasali","eucatric","melaquin")
 
-corygumm_pred_baseline_17 <- predict(baseline_list_cory, corygumm.simp.simp, n.trees=corygumm.simp.simp$gbm.call$best.trees,
-                                     type="response")
+baseline_pred <- lapply(models_simp, function(x){predict(baseline_list_18,x,n.trees=x$gbm.call$best.trees, type="response")})
 
-plot(corygumm_pred_baseline_17) 
+writeRaster(baseline_pred, filename="R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\predictions\\baseline.tif", bylayer=TRUE, suffix = species_names)
 
+
+# run predictions for the other scenarios
+
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\models_simp.RData")
+
+species_names <- c("corygumm","eucabanc","eucabosi","eucadean","eucaeuge","eucagran","eucalong","eucapani","eucaparr","eucaprop","eucaresi",
+                   "eucarobu","eucasali","eucatric","melaquin")
+
+drx <- "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\input\\ECHAM_R1_2039"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)]
+
+Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+                "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+                "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+ECHAM_R1_2039 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  ECHAM_R1_2039 <- stack(files.baseline_18[i], ECHAM_R1_2039)
+}
+
+ECHAM_R1_2039_pred <- lapply(models_simp, function(x){predict(ECHAM_R1_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(ECHAM_R1_2039_pred, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\predictions\\ECHAM_R1_2039\\ECHAM_R1_2039_pred.RData")
+ECHAM_R1_2039_pred <- stack(ECHAM_R1_2039_pred)
+writeRaster(ECHAM_R1_2039_pred, filename="R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\predictions\\ECHAM_R1_2039\\ECHAM_R1_2039.tif", bylayer=TRUE, suffix = species_names)
+
+
+plot(ECHAM_R1_2039_pred[[1]])
+
+
+CCCMA_R2_6079_pred <- stack(CCCMA_R2_6079_pred)
+writeRaster(CCCMA_R2_6079_pred, filename="R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\predictions\\CCCMA_R2_6079\\CCCMA_R2_6079.tif", bylayer=TRUE, suffix = species_names, 
+            overwrite = TRUE)
+
+
+
+load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\predictions\\CCCMA_R2_6079\\CCCMA_R2_6079_pred.RData")
 
