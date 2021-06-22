@@ -272,626 +272,228 @@ load("output/gbm/results_final.RData")
 
 ############################################################################################################################
 ######## analyse results - extract $best.trees, $tree.complexity, $learning.rate, $deviance.mean, $deviance.se 
-########                   from all tests to identify the learning rate and tree complexity that delivered the lowest deviance 
+########                   from all tests to identify the learning rate and tree complexity that resulted in the lowest deviance 
 
-main_statistics_1_2 <- melt(lapply(lapply(lapply(results_final,"[[", 1),"[[",c("gbm.call")),"[",c("best.trees","tree.complexity","learning.rate"))) %>% 
-  pivot_wider(names_from = L2, values_from = value) %>% 
-  dplyr::select(-L1) %>% 
-  bind_cols(melt(lapply(lapply(lapply(results_final,"[[", 1),"[[",c("cv.statistics")),"[",c("deviance.mean","deviance.se"))) %>% 
-  pivot_wider(names_from = L2, values_from = value)) %>% 
-  relocate(L1)
+# flatten nested list to extract the different data
 
-# other tests
+summary_data <- results_final %>% flatten() %>% flatten() 
+summary_data_gbm <- summary_data[grep("gbm.call", names(summary_data))] %>% flatten() %>% flatten()
+summary_data_cv <- summary_data[grep("cv.statistics", names(summary_data))] %>% flatten() %>% flatten()
 
- test <- results_final %>% flatten() %>% flatten() 
- test[names(test) %in% c("gbm.call","cv.statistics")]
- 
- test.2 <- as.data.frame(test[["gbm.call"]][c("best.trees", "tree.complexity", "learning.rate")]) # this gets the data I want, but not for all the list 
- 
- 
- results_test <- data.frame()
- 
- for (i in 1:length(test)) {
-   results_test() <- test[i][["gbm.call"]][c("best.trees", "tree.complexity", "learning.rate")]
-          }
-   
- lapply(test, function(x) x[["gbm.call"]][c("best.trees", "tree.complexity", "learning.rate")])
- 
- lapply(lapply(lapply(test,"[[", 1),"[[",c("gbm.call")),"[",c("best.trees","tree.complexity","learning.rate"))
+summary_data_best <- as.data.frame(summary_data_gbm[grep("best.trees", names(summary_data_gbm))])
+summary_data_best <- data.frame(t(summary_data_best)) 
 
+summary_data_tree <- as.data.frame(summary_data_gbm[grep("tree.complexity", names(summary_data_gbm))])
+summary_data_tree <- data.frame(t(summary_data_tree)) 
 
-# the not great way ----
+summary_data_learning <- as.data.frame(summary_data_gbm[grep("learning.rate", names(summary_data_gbm))])
+summary_data_learning <- data.frame(t(summary_data_learning)) 
 
+summary_data_response <- as.data.frame(summary_data_gbm[grep("response.name", names(summary_data_gbm))])
+summary_data_response <- data.frame(t(summary_data_response)) 
 
-# sp 1
-test.results.sp1.gbm <- as.data.frame(results_final[[1]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[[1]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
- # mutate(spp = 1)
- 
-test.results.sp1.cvstats <- as.data.frame(results_final[[1]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[[1]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_cols(test.results.sp1.gbm)
+summary_data_deviance_mean <- as.data.frame(summary_data_cv[grep("deviance.mean", names(summary_data_cv))])
+summary_data_deviance_mean <- data.frame(t(summary_data_deviance_mean)) 
 
-#sp 2
+summary_data_deviance_se <- as.data.frame(summary_data_cv[grep("deviance.se", names(summary_data_cv))])
+summary_data_deviance_se<- data.frame(t(summary_data_deviance_se)) 
 
-test.results.sp2.gbm <- as.data.frame(results_final[[2]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[[2]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[2]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[2]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[2]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[2]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[2]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name" )])) %>% 
-  bind_rows(as.data.frame(results_final[[2]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[2]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[2]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # mutate(spp = 2)
-test.results.sp2.cvstats <- as.data.frame(results_final[[2]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[[2]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[2]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[2]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[2]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[2]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[2]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[2]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[2]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[2]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_cols(test.results.sp2.gbm)
+# join all data into a single dataframe
 
+summary_complete <- cbind(summary_data_best, summary_data_tree, summary_data_learning, summary_data_response, summary_data_deviance_mean,
+                          summary_data_deviance_se)
 
-#sp 3
+# find the minimum trees, learning rate and tree ccomplexity based on minimum deviance.mean per spp
 
-test.results.sp3.gbm <- as.data.frame(results_final[[3]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[[3]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[3]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[3]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[3]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[3]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[3]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[3]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[3]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[3]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # mutate(spp = 3)
-test.results.sp3.cvstats <- as.data.frame(results_final[[3]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[[3]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[3]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[3]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[3]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[3]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[3]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[3]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[3]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[3]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_cols(test.results.sp3.gbm)
+optimal <- summary_complete %>% 
+  group_by(t.summary_data_response.) %>% 
+  summarise(t.summary_data_deviance_mean. = min(t.summary_data_deviance_mean.)) 
 
-# sp 4
-
-
-test.results.sp4.gbm <- as.data.frame(results_final[[4]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[[4]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[4]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[4]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[4]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[4]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[4]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[4]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[4]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[4]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # mutate(spp = 4)
-test.results.sp4.cvstats <- as.data.frame(results_final[[4]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[[4]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[4]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[4]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[4]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[4]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[4]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[4]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[4]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[4]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_cols(test.results.sp4.gbm)
-
-
-# sp 5
-
-
-test.results.sp5.gbm <- as.data.frame(results_final[[5]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[[5]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[5]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[5]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[5]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[5]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[5]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[5]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[5]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[5]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # mutate(spp = 5)
-test.results.sp5.cvstats <- as.data.frame(results_final[[5]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[[5]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[5]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[5]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[5]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[5]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[5]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[5]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[5]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[5]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_cols(test.results.sp5.gbm)
-
-# sp 6
-
-
-test.results.sp6.gbm <- as.data.frame(results_final[[6]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[[6]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[6]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[6]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[6]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[6]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[6]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[6]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[6]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[6]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # mutate(spp = 6)
-test.results.sp6.cvstats <- as.data.frame(results_final[[6]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[[6]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[6]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[6]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[6]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[6]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[6]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[6]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[6]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[6]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_cols(test.results.sp6.gbm)
-
-# sp 7
-
-
-test.results.sp7.gbm <- as.data.frame(results_final[[7]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[[7]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[7]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[7]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[7]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[7]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[7]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[7]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # bind_rows(as.data.frame(results_final[[7]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[7]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # mutate(spp = 7)
-test.results.sp7.cvstats <- as.data.frame(results_final[[7]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[[7]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[7]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[7]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[7]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[7]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[7]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[7]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[7]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[7]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_cols(test.results.sp7.gbm)
-
-# sp 8
-
-
-test.results.sp8.gbm <- as.data.frame(results_final[[8]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[[8]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[8]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[8]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # bind_rows(as.data.frame(results_final[[8]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[8]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[8]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[8]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[8]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[8]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # mutate(spp = 8)
-test.results.sp8.cvstats <- as.data.frame(results_final[[8]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[[8]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[8]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[8]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[8]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[8]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[8]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[8]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[8]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[8]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_cols(test.results.sp8.gbm)
-
-# sp 9
-
-
-test.results.sp9.gbm <- as.data.frame(results_final[[9]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[[9]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[9]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[9]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # bind_rows(as.data.frame(results_final[[9]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[9]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[9]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[9]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[9]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[9]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # mutate(spp = 9)
-test.results.sp9.cvstats <- as.data.frame(results_final[[9]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[[9]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[9]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[9]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[9]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[9]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[9]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[9]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[9]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[9]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_cols(test.results.sp9.gbm)
-
-# sp 10
-
-
-test.results.sp10.gbm <- as.data.frame(results_final[[10]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[[10]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # bind_rows(as.data.frame(results_final[[10]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[10]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[10]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[10]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[10]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[10]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[10]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[10]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # mutate(spp = 10)
-test.results.sp10.cvstats <- as.data.frame(results_final[[10]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[[10]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[10]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[10]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[10]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[10]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[10]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[10]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[10]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[10]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_cols(test.results.sp10.gbm)
-
-# sp 11
-
-
-test.results.sp11.gbm <- as.data.frame(results_final[[11]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[[11]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[11]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[11]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # bind_rows(as.data.frame(results_final[[11]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[11]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[11]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[11]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[11]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[11]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # mutate(spp = 11)
-test.results.sp11.cvstats <- as.data.frame(results_final[[11]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[[11]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[11]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[11]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[11]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[11]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[11]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[11]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[11]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[11]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_cols(test.results.sp11.gbm)
-
-# sp 12
-
-
-test.results.sp12.gbm <- as.data.frame(results_final[[12]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[[12]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # bind_rows(as.data.frame(results_final[[12]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[12]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[12]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[12]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[12]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[12]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[12]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[12]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # mutate(spp = 12)
-test.results.sp12.cvstats <- as.data.frame(results_final[[12]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[[12]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[12]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[12]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[12]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[12]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[12]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[12]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[12]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[12]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_cols(test.results.sp12.gbm)
-
-# sp 13
-
-
-test.results.sp13.gbm <- as.data.frame(results_final[[13]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[[13]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[13]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[13]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # bind_rows(as.data.frame(results_final[[13]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[13]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[13]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[13]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[13]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[13]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # mutate(spp = 13)
-test.results.sp13.cvstats <- as.data.frame(results_final[[13]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[[13]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[13]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[13]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[13]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[13]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[13]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[13]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[13]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[13]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_cols(test.results.sp13.gbm)
-
-# sp 14
-
-
-test.results.sp14.gbm <- as.data.frame(results_final[[14]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[[14]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[14]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  bind_rows(as.data.frame(results_final[[14]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # bind_rows(as.data.frame(results_final[[14]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[14]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[14]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[14]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[14]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[14]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # mutate(spp = 14)
-test.results.sp14.cvstats <- as.data.frame(results_final[[14]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[[14]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[14]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_rows(as.data.frame(results_final[[14]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[14]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[14]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[14]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[14]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[14]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[14]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_cols(test.results.sp14.gbm)
-
-# sp 15
-
-
-test.results.sp15.gbm <- as.data.frame(results_final[[15]][[1]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]) %>% 
-  bind_rows(as.data.frame(results_final[[15]][[2]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) #%>% 
-  # bind_rows(as.data.frame(results_final[[15]][[3]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[15]][[4]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[15]][[5]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[15]][[6]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[15]][[7]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[15]][[8]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[15]][[9]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # bind_rows(as.data.frame(results_final[[15]][[10]][["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")])) %>% 
-  # mutate(spp = 15)
-test.results.sp15.cvstats <- as.data.frame(results_final[[15]][[1]][["cv.statistics"]][c("deviance.mean","deviance.se")]) %>%
-  bind_rows(as.data.frame(results_final[[15]][[2]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[15]][[3]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[15]][[4]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[15]][[5]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[15]][[6]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[15]][[7]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[15]][[8]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[15]][[9]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  # bind_rows(as.data.frame(results_final[[15]][[10]][["cv.statistics"]][c("deviance.mean","deviance.se")])) %>% 
-  bind_cols(test.results.sp15.gbm)
-
-main_statistics_allspp <- rbind(test.results.sp1.cvstats, test.results.sp2.cvstats, test.results.sp3.cvstats, test.results.sp4.cvstats,
-                                test.results.sp5.cvstats, test.results.sp6.cvstats, test.results.sp7.cvstats, test.results.sp8.cvstats,
-                                test.results.sp9.cvstats, test.results.sp10.cvstats, test.results.sp11.cvstats, test.results.sp12.cvstats,
-                                test.results.sp13.cvstats, test.results.sp14.cvstats, test.results.sp15.cvstats)
-
-# ----
-
-
-# find the minimum trees, lr and tc based on minimum deviance.mean per spp
-
-optimal <- main_statistics_allspp %>% 
-  group_by(response.name) %>% 
-  summarise(deviance.mean = min(deviance.mean)) 
-
-optimal_results <- left_join(optimal, main_statistics_allspp, by = c("response.name", "deviance.mean"))
+optimal_results <- left_join(optimal, summary_complete, by = c("t.summary_data_response.", "t.summary_data_deviance_mean."))
 
 # save summary of the tree complexity and learning rate that result in the minimum deviance 
 
 save(optimal_results, file = "output/gbm/optimal_results.RData")
 write.csv(optimal_results, file = "output/gbm/optimal_results.csv")
 
-# extract optimal models from results_final
+# extract optimal models from results_final based on summary above and save them as a separate element 
 
-eucabanc <- results_final[[1]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
-save(eucabanc, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucabanc.RData")
-eucabosi <- results_final[[2]][[1]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
-save(eucabosi, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucabosi.RData")
-eucadean <- results_final[[3]][[1]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
-save(eucadean, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucadean.RData")
-eucagran <- results_final[[4]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
-save(eucagran, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucagran.RData")
-eucalong <- results_final[[5]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
-save(eucalong, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucalong.RData")
-eucapani <- results_final[[6]][[3]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
-save(eucapani, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucapani.RData")
-corygumm <- results_final[[7]][[8]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
-save(corygumm, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\corygumm.RData")
-eucaprop <- results_final[[8]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
-save(eucaprop, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaprop.RData")
-eucaresi <- results_final[[9]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
-save(eucaresi, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaresi.RData")
-eucarobu <- results_final[[10]][[1]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
-save(eucarobu, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucarobu.RData")
-eucasali <- results_final[[11]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
-save(eucasali, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucasali.RData")
-eucatric <- results_final[[12]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
-save(eucatric, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucatric.RData")
-melaquin <- results_final[[13]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
-save(melaquin, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\melaquin.RData")
-eucaeuge <- results_final[[14]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
-save(eucaeuge, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaeuge.RData")
-eucaparr <- results_final[[15]][[2]]#[["gbm.call"]][c("best.trees","tree.complexity","learning.rate", "response.name")]
-save(eucaparr, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaparr.RData")
+eucabanc <- results_final[[1]][[2]] # first element in the list contains all the runs for x species, second element calls the model with the lowest deviance
+save(eucabanc, file = "output/gbm/optimised_complete_models/eucabanc.RData")
+eucabosi <- results_final[[2]][[1]]
+save(eucabosi, file = "output/gbm/optimised_complete_models/eucabosi.RData")
+eucadean <- results_final[[3]][[1]]
+save(eucadean, file = "output/gbm/optimised_complete_models/eucadean.RData")
+eucagran <- results_final[[4]][[2]]
+save(eucagran, file = "output/gbm/optimised_complete_models/eucagran.RData")
+eucalong <- results_final[[5]][[2]]
+save(eucalong, file = "output/gbm/optimised_complete_models/eucalong.RData")
+eucapani <- results_final[[6]][[3]]
+save(eucapani, file = "output/gbm/optimised_complete_models/eucapani.RData")
+corygumm <- results_final[[7]][[8]]
+save(corygumm, file = "output/gbm/optimised_complete_models/corygumm.RData")
+eucaprop <- results_final[[8]][[2]]
+save(eucaprop, file = "output/gbm/optimised_complete_models/eucaprop.RData")
+eucaresi <- results_final[[9]][[2]]
+save(eucaresi, file = "output/gbm/optimised_complete_models/eucaresi.RData")
+eucarobu <- results_final[[10]][[1]]
+save(eucarobu, file = "output/gbm/optimised_complete_models/eucarobu.RData")
+eucasali <- results_final[[11]][[2]]
+save(eucasali, file = "output/gbm/optimised_complete_models/eucasali.RData")
+eucatric <- results_final[[12]][[2]]
+save(eucatric, file = "output/gbm/optimised_complete_models/eucatric.RData")
+melaquin <- results_final[[13]][[2]]
+save(melaquin, file = "output/gbm/optimised_complete_models/melaquin.RData")
+eucaeuge <- results_final[[14]][[2]]
+save(eucaeuge, file = "output/gbm/optimised_complete_models/eucaeuge.RData")
+eucaparr <- results_final[[15]][[2]]
+save(eucaparr, file = "output/gbm/optimised_complete_models/eucaparr.RData")
 
-# to obtain the importance of the different variables 
-# example
+######################################################################################
+########## analyse results -  to obtain the importance of the different variables use 
+##########                    example
 summary(eucabanc) # this creates a graph
 eucabanc[["contributions"]] # this prints the contributions of each variable
 
-
-# assess change in predictive deviance when dropping variables  
+#######################################################################################
+# step 3 - assess change in predictive deviance when dropping variables  
+#######################################################################################
 
 eucabanc.simp <- gbm.simplify(eucabanc, n.drops = 10)
-save(eucabanc.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucabanc.simp.RData")
+save(eucabanc.simp, file = "output/gbm/drop_variables_models/eucabanc.simp.RData")
 eucabosi.simp <- gbm.simplify(eucabosi, n.drops = 10)
-save(eucabosi.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucabosi.simp.RData")
+save(eucabosi.simp, file = "output/gbm/drop_variables_models/eucabosi.simp.RData")
 eucadean.simp <- gbm.simplify(eucadean, n.drops = 10)
-save(eucadean.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucadean.simp.RData")
+save(eucadean.simp, file = "output/gbm/drop_variables_models/eucadean.simp.RData")
 eucagran.simp <- gbm.simplify(eucagran, n.drops = 10)
-save(eucagran.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucagran.simp.RData")
+save(eucagran.simp, file = "output/gbm/drop_variables_models/eucagran.simp.RData")
 eucalong.simp <- gbm.simplify(eucalong, n.drops = 10)
-save(eucalong.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucalong.simp.RData")
+save(eucalong.simp, file = "output/gbm/drop_variables_models/eucalong.simp.RData")
 eucapani.simp <- gbm.simplify(eucapani, n.drops = 10)
-save(eucapani.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucapani.simp.RData")
+save(eucapani.simp, file = "output/gbm/drop_variables_models/eucapani.simp.RData")
 corygumm.simp <- gbm.simplify(corygumm, n.drops = 10)
-save(corygumm.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\corygumm.simp.RData")
+save(corygumm.simp, file = "output/gbm/drop_variables_models/corygumm.simp.RData")
 eucaprop.simp <- gbm.simplify(eucaprop, n.drops = 10)
-save(eucaprop.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaprop.simp.RData")
+save(eucaprop.simp, file = "output/gbm/drop_variables_models/eucaprop.simp.RData")
 eucaresi.simp <- gbm.simplify(eucaresi, n.drops = 10)
-save(eucaresi.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaresi.simp.RData")
+save(eucaresi.simp, file = "output/gbm/drop_variables_models/eucaresi.simp.RData")
 eucarobu.simp <- gbm.simplify(eucarobu, n.drops = 10)
-save(eucarobu.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucarobu.simp.RData")
+save(eucarobu.simp, file = "output/gbm/drop_variables_models/eucarobu.simp.RData")
 eucasali.simp <- gbm.simplify(eucasali, n.drops = 10)
-save(eucasali.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucasali.simp.RData")
+save(eucasali.simp, file = "output/gbm/drop_variables_models/eucasali.simp.RData")
 eucatric.simp <- gbm.simplify(eucatric, n.drops = 10)
-save(eucatric.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucatric.simp.RData")
+save(eucatric.simp, file = "output/gbm/drop_variables_models/eucatric.simp.RData")
 melaquin.simp <- gbm.simplify(melaquin, n.drops = 10)
-save(melaquin.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\melaquin.simp.RData")
+save(melaquin.simp, file = "output/gbm/drop_variables_models/melaquin.simp.RData")
 eucaeuge.simp <- gbm.simplify(eucaeuge, n.drops = 10)
-save(eucaeuge.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaeuge.simp.RData")
+save(eucaeuge.simp, file = "output/gbm/drop_variables_models/eucaeuge.simp.RData")
 eucaparr.simp <- gbm.simplify(eucaparr, n.drops = 10)
-save(eucaparr.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaparr.simp.RData")
+save(eucaparr.simp, file = "output/gbm/drop_variables_models/eucaparr.simp.RData")
 
-# re-run models with variables dropped 
-# based on parameters in  "R:\KPRIVATE19-A2212\analysis\ecological_climate_models\output\gbm\optimal_parameters.xlsx.csv"
+#########################################################################################################
+################## to see the results, i.e., change in predictive deviance when dropping variables, use:
+eucaeuge.simp[["deviance.summary"]]
 
+################## to see the list of variables used in each drop use
+eucaparr.simp[["pred.list"]]
 
-corygumm.simp.simp <- gbm.step(data_trees, gbm.x =
-                                 corygumm.simp$pred.list[[1]], gbm.y = 1, tree.complexity = 5, learning.rate =
-                                 0.05)
-save(corygumm.simp.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\corygumm.simp.simp.RData")
-eucabanc.simp.simp <- gbm.step(data_trees, gbm.x =
-                                 eucabanc.simp$pred.list[[4]], gbm.y = 2, tree.complexity = 4, learning.rate =
-                                 0.005)
-save(eucabanc.simp.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucabanc.simp.simp.RData")
-eucabosi.simp.simp <- gbm.step(data_trees, gbm.x =
-                                 eucabosi.simp$pred.list[[9]], gbm.y = 3, tree.complexity = 5, learning.rate =
-                                 0.01)
-save(eucabosi.simp.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucabosi.simp.simp.RData")
-eucadean.simp.simp <- gbm.step(data_trees, gbm.x =
-                                 eucadean.simp$pred.list[[1]], gbm.y = 4, tree.complexity = 5, learning.rate =
-                                 0.01)
-save(eucadean.simp.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucadean.simp.simp.RData")
-eucagran.simp.simp <- gbm.step(data_trees, gbm.x =
-                                 eucagran.simp$pred.list[[1]], gbm.y = 6, tree.complexity = 5, learning.rate =
-                                 0.005)
-save(eucagran.simp.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucagran.simp.simp.RData")
-eucalong.simp.simp <- gbm.step(data_trees, gbm.x =
-                                 eucalong.simp$pred.list[[4]], gbm.y = 7, tree.complexity = 5, learning.rate =
-                                 0.005)
-save(eucalong.simp.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucalong.simp.simp.RData")
-eucapani.simp.simp <- gbm.step(data_trees, gbm.x =
-                                 eucapani.simp$pred.list[[9]], gbm.y = 8, tree.complexity = 4, learning.rate =
-                                 0.01)
-save(eucapani.simp.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucapani.simp.simp.RData")
-eucaprop.simp.simp <- gbm.step(data_trees, gbm.x =
-                                 eucaprop.simp$pred.list[[2]], gbm.y = 10, tree.complexity = 5, learning.rate =
-                                 0.01)
-save(eucaprop.simp.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaprop.simp.simp.RData")
-eucaresi.simp.simp <- gbm.step(data_trees, gbm.x =
-                                 eucaresi.simp$pred.list[[2]], gbm.y = 11, tree.complexity = 5, learning.rate =
-                                 0.01)
-save(eucaresi.simp.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaresi.simp.simp.RData")
-eucaeuge.simp.simp <- gbm.step(data_trees, gbm.x =
-                                 eucaeuge.simp$pred.list[[1]], gbm.y = 5, tree.complexity = 5, learning.rate =
-                                 0.01)
-save(eucaeuge.simp.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucaeuge.simp.simp.RData")
-eucarobu.simp.simp <- gbm.step(data_trees, gbm.x =
-                                 eucarobu.simp$pred.list[[1]], gbm.y = 12, tree.complexity = 5, learning.rate =
-                                 0.01)
-save(eucarobu.simp.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucarobu.simp.simp.RData")
-eucasali.simp.simp <- gbm.step(data_trees, gbm.x =
-                                 eucasali.simp$pred.list[[1]], gbm.y = 13, tree.complexity = 5, learning.rate =
-                                 0.01)
-save(eucasali.simp.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucasali.simp.simp.RData")
-eucatric.simp.simp <- gbm.step(data_trees, gbm.x =
-                                 eucatric.simp$pred.list[[2]], gbm.y = 14, tree.complexity = 5, learning.rate =
-                                 0.005)
-save(eucatric.simp.simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\eucatric.simp.simp.RData")
+#################################################################################################################################
+# step 4 - re-run models with the variables that did not decrease predictive deviance (dropped variables) 
+# based on summary of results in  "R:\KPRIVATE19-A2212\analysis\ecological_climate_models\output\gbm\optimal_parameters.xlsx.csv"
+# no variables dropped for eucaparr and melaquin 
+# if the simplified model does not include the data frame with the original input data 'data_trees', then append it to the gbm, 
+#     e.g. corygumm.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees   
+#################################################################################################################################
 
+corygumm.simp.simp <- gbm.step(data_trees, gbm.x = corygumm.simp$pred.list[[1]], # the drop with the variables that did not decrease predictive deviance
+                               gbm.y = 1, tree.complexity = 5, learning.rate = 0.05)
+save(corygumm.simp.simp, file = "output/gbm/simplified_models/corygumm.simp.simp.RData")
 
-# load simplified models
+eucabanc.simp.simp <- gbm.step(data_trees, gbm.x = eucabanc.simp$pred.list[[4]], gbm.y = 2, tree.complexity = 4, learning.rate = 0.005)
+save(eucabanc.simp.simp, file = "output/gbm/simplified_models/eucabanc.simp.simp.RData")
 
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\corygumm.simp.simp.RData")                             
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucabanc.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucabosi.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucadean.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucaeuge.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucagran.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucalong.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucapani.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucaparr.RData") # no variables to drop for eucaparr 
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucaprop.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucaresi.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucarobu.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucasali.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\eucatric.simp.simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\simplified_models\\melaquin.RData") # no variables to drop for melaquin 
+eucabosi.simp.simp <- gbm.step(data_trees, gbm.x = eucabosi.simp$pred.list[[9]], gbm.y = 3, tree.complexity = 5, learning.rate = 0.01)
+save(eucabosi.simp.simp, file = "output/gbm/simplified_models/eucabosi.simp.simp.RData")
 
-# make predictions using 'predict' function form raster package
+eucadean.simp.simp <- gbm.step(data_trees, gbm.x = eucadean.simp$pred.list[[1]], gbm.y = 4, tree.complexity = 5, learning.rate = 0.01)
+save(eucadean.simp.simp, file = "output/gbm/simplified_models/eucadean.simp.simp.RData")
+
+eucagran.simp.simp <- gbm.step(data_trees, gbm.x = eucagran.simp$pred.list[[1]], gbm.y = 6, tree.complexity = 5, learning.rate = 0.005)
+save(eucagran.simp.simp, file = "output/gbm/simplified_models/eucagran.simp.simp.RData")
+
+eucalong.simp.simp <- gbm.step(data_trees, gbm.x = eucalong.simp$pred.list[[4]], gbm.y = 7, tree.complexity = 5, learning.rate = 0.005)
+save(eucalong.simp.simp, file = "output/gbm/simplified_models/eucalong.simp.simp.RData")
+
+eucapani.simp.simp <- gbm.step(data_trees, gbm.x = eucapani.simp$pred.list[[9]], gbm.y = 8, tree.complexity = 4, learning.rate = 0.01)
+save(eucapani.simp.simp, file = "output/gbm/simplified_models/eucapani.simp.simp.RData")
+
+eucaprop.simp.simp <- gbm.step(data_trees, gbm.x = eucaprop.simp$pred.list[[2]], gbm.y = 10, tree.complexity = 5, learning.rate = 0.01)
+save(eucaprop.simp.simp, file = "output/gbm/simplified_models/eucaprop.simp.simp.RData")
+
+eucaresi.simp.simp <- gbm.step(data_trees, gbm.x = eucaresi.simp$pred.list[[2]], gbm.y = 11, tree.complexity = 5, learning.rate = 0.01)
+save(eucaresi.simp.simp, file = "output/gbm/simplified_models/eucaresi.simp.simp.RData")
+
+eucaeuge.simp.simp <- gbm.step(data_trees, gbm.x = eucaeuge.simp$pred.list[[1]], gbm.y = 5, tree.complexity = 5, learning.rate = 0.01)
+save(eucaeuge.simp.simp, file = "output/gbm/simplified_models/eucaeuge.simp.simp.RData")
+
+eucarobu.simp.simp <- gbm.step(data_trees, gbm.x = eucarobu.simp$pred.list[[1]], gbm.y = 12, tree.complexity = 5, learning.rate = 0.01)
+save(eucarobu.simp.simp, file = "output/gbm/simplified_models/eucarobu.simp.simp.RData")
+
+eucasali.simp.simp <- gbm.step(data_trees, gbm.x = eucasali.simp$pred.list[[1]], gbm.y = 13, tree.complexity = 5, learning.rate = 0.01)
+save(eucasali.simp.simp, file = "output/gbm/simplified_models/eucasali.simp.simp.RData")
+
+eucatric.simp.simp <- gbm.step(data_trees, gbm.x = eucatric.simp$pred.list[[2]], gbm.y = 14, tree.complexity = 5, learning.rate = 0.005)
+save(eucatric.simp.simp, file = "output/gbm/simplified_models/eucatric.simp.simp.RData")
+
+#################################################################################################################################################
+################## analyse results - to obtain summaries of the relative contribution of the different variables in the final, simplified, models
 
 # save all simplified models as a list
 models_simp <- list(corygumm.simp.simp,eucabanc.simp.simp,eucabosi.simp.simp,eucadean.simp.simp,eucaeuge.simp.simp,
                     eucagran.simp.simp,eucalong.simp.simp,eucapani.simp.simp,eucaparr,eucaprop.simp.simp,eucaresi.simp.simp,
                     eucarobu.simp.simp,eucasali.simp.simp,eucatric.simp.simp,melaquin)
-save(models_simp, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\models_simp.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\models_simp.RData")
+save(models_simp, file = "output/gbm/models_simp.RData")
 
-
-# to obtain relative importance of variables
-
-# to obtain the relative contribution of the different variables 
-
-models_simp[[1]][["contributions"]]
-test <- models_simp[[10]][["contributions"]]
-sum(test$rel.inf)
-
+# add the names of the different spp to the list with the final, simplified, models
+species_names <- c("corygumm","eucabanc","eucabosi","eucadean","eucaeuge","eucagran","eucalong","eucapani","eucaparr","eucaprop","eucaresi",
+                   "eucarobu","eucasali","eucatric","melaquin")
 
 names(models_simp) <- species_names
+
+# list of the relative contribution of all variables for all spp 
 
 contributions_models_simp <- melt(lapply(models_simp, '[', "contributions")) %>% 
   pivot_wider(names_from = var, values_from = value) %>% 
   pivot_longer(cols = cw_precipwp:dl_strmdstge2, names_to = "variables", values_to = "relative_importance")
 
+# filter to obtain the variables with the highest importance
 
 top_contributions <- contributions_models_simp %>% 
   dplyr::select(-c(variable, L2)) %>% 
   group_by(L1) %>% 
-  slice_max(relative_importance, n=3)
+  slice_max(relative_importance, n=1)
 
+# the number of models for which a top variable was the highest in importance 
 frequencies <- top_contributions %>% 
   group_by(variables) %>% 
   summarise(frequencies = n())
 
-
+# the number of models for which a variable was used in the final, simplified, models
 all_frequencies <- contributions_models_simp %>% 
   group_by(variables) %>% 
   subset(!is.na(relative_importance)) %>% 
   summarise(frequencies = n())
 
 
-# run the predictions for the baseline scenario
+##########################################################################
+# step 5 - make predictions using 'predict' function form raster package
+##########################################################################
 
-# read the tif files (variables) and save them as a raster stack for the baseline scenario
+######### baseline scenario ############
 
-drx <- "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\input\\covariates_18_baseline"
+# read the tif files (variables) and save them as a raster stack 
+
+drx <- "input/covariates_18_baseline"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 baseline_list_18 <- stack() 
@@ -900,54 +502,287 @@ for(i in 1:length(files.baseline)) {
   baseline_list_18 <- stack(files.baseline[i], baseline_list_18)
 }
 
-save(baseline_list_18, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\baseline_list_18.RData")
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\baseline_list_18.RData")
-
-# add original data to the simplified model # check this in the code  ----
-# angaus.tc5.lr005.simp <- gbm.step(Anguilla_train, gbm.x=angaus.simp$pred.list[[1]], gbm.y=2, tree.complexity=5, learning.rate=0.005)
-
-corygumm.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees                          
-eucabanc.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
-eucabosi.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
-eucadean.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
-eucaeuge.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
-eucagran.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
-eucalong.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
-eucapani.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
-eucaparr
-eucaprop.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
-eucaresi.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
-eucarobu.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
-eucasali.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
-eucatric.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
-melaquin
-# ----
-
-# run all the predictions for the baseline scenario and save them as a raster stack 
-
-species_names <- c("corygumm","eucabanc","eucabosi","eucadean","eucaeuge","eucagran","eucalong","eucapani","eucaparr","eucaprop","eucaresi",
-                      "eucarobu","eucasali","eucatric","melaquin")
+# run the predictions for all spp in the baseline scenario, save them as a list and as .tif 
 
 baseline_pred <- lapply(models_simp, function(x){predict(baseline_list_18,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(baseline_pred, file = "output/predictions/baseline/baseline_pred.RData")
+baseline_pred <- stack(baseline_pred)
+writeRaster(baseline_pred, filename="output/predictions/baseline/baseline.tif", bylayer=TRUE, suffix = species_names)
 
-writeRaster(baseline_pred, filename="R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\predictions\\baseline.tif", bylayer=TRUE, suffix = species_names)
+########### CCCMA_R1_2039 ###############
 
-
-# run predictions for the other scenarios
-
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\gbm\\models_simp.RData")
-
-species_names <- c("corygumm","eucabanc","eucabosi","eucadean","eucaeuge","eucagran","eucalong","eucapani","eucaparr","eucaprop","eucaresi",
-                   "eucarobu","eucasali","eucatric","melaquin")
-
-drx <- "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\input\\ECHAM_R1_2039"
+drx <- "input/CCCMA_R1_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)]
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
 
-Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
-                "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
-                "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+CCCMA_R1_2039 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  CCCMA_R1_2039 <- stack(files.baseline_18[i], CCCMA_R1_2039)
+}
+
+CCCMA_R1_2039_pred <- lapply(models_simp, function(x){predict(CCCMA_R1_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(CCCMA_R1_2039_pred, file = "output/predictions/CCCMA_R1_2039/CCCMA_R1_2039_pred.RData")
+CCCMA_R1_2039_pred <- stack(CCCMA_R1_2039_pred)
+writeRaster(CCCMA_R1_2039_pred, filename="output/predictions/CCCMA_R1_2039/CCCMA_R1_2039.tif", bylayer=TRUE, suffix = species_names)
+
+########### CCCMA_R1_6079 ###############
+
+drx <- "input/CCCMA_R1_6079"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+CCCMA_R1_6079 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  CCCMA_R1_6079 <- stack(files.baseline_18[i], CCCMA_R1_6079)
+}
+
+CCCMA_R1_6079_pred <- lapply(models_simp, function(x){predict(CCCMA_R1_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(CCCMA_R1_6079_pred, file = "output/predictions/CCCMA_R1_6079/CCCMA_R1_6079_pred.RData")
+CCCMA_R1_6079_pred <- stack(CCCMA_R1_6079_pred)
+writeRaster(CCCMA_R1_6079_pred, filename="output/predictions/CCCMA_R1_6079/CCCMA_R1_6079.tif", bylayer=TRUE, suffix = species_names)
+
+########### CCCMA_R2_2039 ###############
+
+drx <- "input/CCCMA_R2_2039"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+CCCMA_R2_2039 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  CCCMA_R2_2039 <- stack(files.baseline_18[i], CCCMA_R2_2039)
+}
+
+CCCMA_R2_2039_pred <- lapply(models_simp, function(x){predict(CCCMA_R2_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(CCCMA_R2_2039_pred, file = "output/predictions/CCCMA_R2_2039/CCCMA_R2_2039_pred.RData")
+CCCMA_R2_2039_pred <- stack(CCCMA_R2_2039_pred)
+writeRaster(CCCMA_R2_2039_pred, filename="output/predictions/CCCMA_R2_2039/CCCMA_R2_2039.tif", bylayer=TRUE, suffix = species_names)
+
+########### CCCMA_R2_6079 ###############
+
+drx <- "input/CCCMA_R2_6079"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+CCCMA_R2_6079 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  CCCMA_R2_6079 <- stack(files.baseline_18[i], CCCMA_R2_6079)
+}
+
+CCCMA_R2_6079_pred <- lapply(models_simp, function(x){predict(CCCMA_R2_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(CCCMA_R2_6079_pred, file = "output/predictions/CCCMA_R2_6079/CCCMA_R2_6079_pred.RData")
+CCCMA_R2_6079_pred <- stack(CCCMA_R2_6079_pred)
+writeRaster(CCCMA_R2_6079_pred, filename="output/predictions/CCCMA_R2_6079/CCCMA_R2_6079.tif", bylayer=TRUE, suffix = species_names)
+
+########### CCCMA_R3_2039 ###############
+
+drx <- "input/CCCMA_R3_2039"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+CCCMA_R3_2039 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  CCCMA_R3_2039 <- stack(files.baseline_18[i], CCCMA_R3_2039)
+}
+
+CCCMA_R3_2039_pred <- lapply(models_simp, function(x){predict(CCCMA_R3_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(CCCMA_R3_2039_pred, file = "output/predictions/CCCMA_R3_2039/CCCMA_R3_2039_pred.RData")
+CCCMA_R3_2039_pred <- stack(CCCMA_R3_2039_pred)
+writeRaster(CCCMA_R3_2039_pred, filename="output/predictions/CCCMA_R3_2039/CCCMA_R3_2039.tif", bylayer=TRUE, suffix = species_names)
+
+########### CCCMA_R3_6079 ###############
+
+drx <- "input/CCCMA_R3_6079"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+CCCMA_R3_6079 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  CCCMA_R3_6079 <- stack(files.baseline_18[i], CCCMA_R3_6079)
+}
+
+CCCMA_R3_6079_pred <- lapply(models_simp, function(x){predict(CCCMA_R3_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(CCCMA_R3_6079_pred, file = "output/predictions/CCCMA_R3_6079/CCCMA_R3_6079_pred.RData")
+CCCMA_R3_6079_pred <- stack(CCCMA_R3_6079_pred)
+writeRaster(CCCMA_R3_6079_pred, filename="output/predictions/CCCMA_R3_6079/CCCMA_R3_6079.tif", bylayer=TRUE, suffix = species_names)
+
+########### CSIRO_R1_6079 ###############
+
+drx <- "input/CSIRO_R1_6079"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+CSIRO_R1_6079 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  CSIRO_R1_6079 <- stack(files.baseline_18[i], CSIRO_R1_6079)
+}
+
+CSIRO_R1_6079_pred <- lapply(models_simp, function(x){predict(CSIRO_R1_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(CSIRO_R1_6079_pred, file = "output/predictions/CSIRO_R1_6079/CSIRO_R1_6079_pred.RData")
+CSIRO_R1_6079_pred <- stack(CSIRO_R1_6079_pred)
+writeRaster(CSIRO_R1_6079_pred, filename="output/predictions/CSIRO_R1_6079/CSIRO_R1_2039.tif", bylayer=TRUE, suffix = species_names)
+
+########### CSIRO_R1_2039 ###############
+
+drx <- "input/CSIRO_R1_2039"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+CSIRO_R1_2039 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  CSIRO_R1_2039 <- stack(files.baseline_18[i], CSIRO_R1_2039)
+}
+
+CSIRO_R1_2039_pred <- lapply(models_simp, function(x){predict(CSIRO_R1_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(CSIRO_R1_2039_pred, file = "output/predictions/CSIRO_R1_2039/CSIRO_R1_2039_pred.RData")
+CSIRO_R1_2039_pred <- stack(CSIRO_R1_2039_pred)
+writeRaster(CSIRO_R1_2039_pred, filename="output/predictions/CSIRO_R1_2039/CSIRO_R1_2039.tif", bylayer=TRUE, suffix = species_names)
+
+########### CSIRO_R2_2039 ###############
+
+drx <- "input/CSIRO_R2_2039"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+CSIRO_R2_2039 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  CSIRO_R2_2039 <- stack(files.baseline_18[i], CSIRO_R2_2039)
+}
+
+CSIRO_R2_2039_pred <- lapply(models_simp, function(x){predict(CSIRO_R2_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(CSIRO_R2_2039_pred, file = "output/predictions/CSIRO_R2_2039/CSIRO_R2_2039_pred.RData")
+CSIRO_R2_2039_pred <- stack(CSIRO_R2_2039_pred)
+writeRaster(CSIRO_R2_2039_pred, filename="output/predictions/CSIRO_R2_2039/CSIRO_R2_2039.tif", bylayer=TRUE, suffix = species_names)
+
+########### CSIRO_R2_6079 ###############
+
+drx <- "input/CSIRO_R2_6079"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+CSIRO_R2_6079 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  CSIRO_R2_6079 <- stack(files.baseline_18[i], CSIRO_R2_6079)
+}
+
+CSIRO_R2_6079_pred <- lapply(models_simp, function(x){predict(CSIRO_R2_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(CSIRO_R2_6079_pred, file = "output/predictions/CSIRO_R2_6079/CSIRO_R2_6079_pred.RData")
+CSIRO_R2_6079_pred <- stack(CSIRO_R2_6079_pred)
+writeRaster(CSIRO_R2_6079_pred, filename="output/predictions/CSIRO_R2_6079/CSIRO_R2_6079.tif", bylayer=TRUE, suffix = species_names)
+
+########### CSIRO_R3_2039 ###############
+
+drx <- "input/CSIRO_R3_2039"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+CSIRO_R3_2039 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  CSIRO_R3_2039 <- stack(files.baseline_18[i], CSIRO_R3_2039)
+}
+
+CSIRO_R3_2039_pred <- lapply(models_simp, function(x){predict(CSIRO_R3_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(CSIRO_R3_2039_pred, file = "output/predictions/CSIRO_R3_2039/CSIRO_R3_2039_pred.RData")
+CSIRO_R3_2039_pred <- stack(CSIRO_R3_2039_pred)
+writeRaster(CSIRO_R3_2039_pred, filename="output/predictions/CSIRO_R3_2039/CSIRO_R3_2039.tif", bylayer=TRUE, suffix = species_names)
+
+########### CSIRO_R3_6079 ###############
+
+drx <- "input/CSIRO_R3_6079"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+CSIRO_R3_6079 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  CSIRO_R3_6079 <- stack(files.baseline_18[i], CSIRO_R3_6079)
+}
+
+CSIRO_R3_6079_pred <- lapply(models_simp, function(x){predict(CSIRO_R3_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(CSIRO_R3_6079_pred, file = "output/predictions/CSIRO_R3_6079/CSIRO_R3_6079_pred.RData")
+CSIRO_R3_6079_pred <- stack(CSIRO_R3_6079_pred)
+writeRaster(CSIRO_R3_6079_pred, filename="output/predictions/CSIRO_R3_6079/CSIRO_R3_6079.tif", bylayer=TRUE, suffix = species_names)
+
+########### ECHAM_R1_2039 ###############
+
+drx <- "input/ECHAM_R1_2039"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
 ECHAM_R1_2039 <- stack() 
 
@@ -956,19 +791,248 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 ECHAM_R1_2039_pred <- lapply(models_simp, function(x){predict(ECHAM_R1_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(ECHAM_R1_2039_pred, file = "R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\predictions\\ECHAM_R1_2039\\ECHAM_R1_2039_pred.RData")
+save(ECHAM_R1_2039_pred, file = "output/predictions/ECHAM_R1_2039/ECHAM_R1_2039_pred.RData")
 ECHAM_R1_2039_pred <- stack(ECHAM_R1_2039_pred)
-writeRaster(ECHAM_R1_2039_pred, filename="R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\predictions\\ECHAM_R1_2039\\ECHAM_R1_2039.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(ECHAM_R1_2039_pred, filename="output/predictions/ECHAM_R1_2039/ECHAM_R1_2039.tif", bylayer=TRUE, suffix = species_names)
 
+########### ECHAM_R1_6079 ###############
 
-plot(ECHAM_R1_2039_pred[[1]])
+drx <- "input/ECHAM_R1_6079"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
 
-CCCMA_R2_6079_pred <- stack(CCCMA_R2_6079_pred)
-writeRaster(CCCMA_R2_6079_pred, filename="R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\predictions\\CCCMA_R2_6079\\CCCMA_R2_6079.tif", bylayer=TRUE, suffix = species_names, 
-            overwrite = TRUE)
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
+ECHAM_R1_6079 <- stack() 
 
+for(i in 1:length(files.baseline_18)) { 
+  ECHAM_R1_6079 <- stack(files.baseline_18[i], ECHAM_R1_6079)
+}
 
-load("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models\\output\\predictions\\CCCMA_R2_6079\\CCCMA_R2_6079_pred.RData")
+ECHAM_R1_6079_pred <- lapply(models_simp, function(x){predict(ECHAM_R1_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(ECHAM_R1_6079_pred, file = "output/predictions/ECHAM_R1_6079/ECHAM_R1_6079_pred.RData")
+ECHAM_R1_6079_pred <- stack(ECHAM_R1_6079_pred)
+writeRaster(ECHAM_R1_6079_pred, filename="output/predictions/ECHAM_R1_6079/ECHAM_R1_6079.tif", bylayer=TRUE, suffix = species_names)
 
+########### ECHAM_R2_2039 ###############
+
+drx <- "input/ECHAM_R2_2039"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+ECHAM_R2_2039 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  ECHAM_R2_2039 <- stack(files.baseline_18[i], ECHAM_R2_2039)
+}
+
+ECHAM_R2_2039_pred <- lapply(models_simp, function(x){predict(ECHAM_R2_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(ECHAM_R2_2039_pred, file = "output/predictions/ECHAM_R2_2039/ECHAM_R2_2039_pred.RData")
+ECHAM_R2_2039_pred <- stack(ECHAM_R2_2039_pred)
+writeRaster(ECHAM_R2_2039_pred, filename="output/predictions/ECHAM_R2_2039/ECHAM_R2_2039.tif", bylayer=TRUE, suffix = species_names)
+
+########### ECHAM_R2_6079 ###############
+
+drx <- "input/ECHAM_R2_6079"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+ECHAM_R2_6079 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  ECHAM_R2_6079 <- stack(files.baseline_18[i], ECHAM_R2_6079)
+}
+
+ECHAM_R2_6079_pred <- lapply(models_simp, function(x){predict(ECHAM_R2_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(ECHAM_R2_6079_pred, file = "output/predictions/ECHAM_R2_6079/ECHAM_R2_6079_pred.RData")
+ECHAM_R2_6079_pred <- stack(ECHAM_R2_6079_pred)
+writeRaster(ECHAM_R2_6079_pred, filename="output/predictions/ECHAM_R2_6079/ECHAM_R2_6079.tif", bylayer=TRUE, suffix = species_names)
+
+########### ECHAM_R3_2039 ###############
+
+drx <- "input/ECHAM_R3_2039"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+ECHAM_R3_2039 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  ECHAM_R3_2039 <- stack(files.baseline_18[i], ECHAM_R3_2039)
+}
+
+ECHAM_R3_2039_pred <- lapply(models_simp, function(x){predict(ECHAM_R3_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(ECHAM_R3_2039_pred, file = "output/predictions/ECHAM_R3_2039/ECHAM_R3_2039_pred.RData")
+ECHAM_R3_2039_pred <- stack(ECHAM_R3_2039_pred)
+writeRaster(ECHAM_R3_2039_pred, filename="output/predictions/ECHAM_R3_2039/ECHAM_R3_2039.tif", bylayer=TRUE, suffix = species_names)
+
+########### ECHAM_R3_6079 ###############
+
+drx <- "input/ECHAM_R3_6079"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+ECHAM_R3_6079 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  ECHAM_R3_6079 <- stack(files.baseline_18[i], ECHAM_R3_6079)
+}
+
+ECHAM_R3_6079_pred <- lapply(models_simp, function(x){predict(ECHAM_R3_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(ECHAM_R3_6079_pred, file = "output/predictions/ECHAM_R3_6079/ECHAM_R3_6079_pred.RData")
+ECHAM_R3_6079_pred <- stack(ECHAM_R3_6079_pred)
+writeRaster(ECHAM_R3_6079_pred, filename="output/predictions/ECHAM_R3_6079/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
+
+########### MIROC_R1_2039 ###############
+
+drx <- "input/MIROC_R1_2039"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+MIROC_R1_2039 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  MIROC_R1_2039 <- stack(files.baseline_18[i], MIROC_R1_2039)
+}
+
+MIROC_R1_2039_pred <- lapply(models_simp, function(x){predict(MIROC_R1_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(MIROC_R1_2039_pred, file = "output/predictions/MIROC_R1_2039/MIROC_R1_2039_pred.RData")
+MIROC_R1_2039_pred <- stack(MIROC_R1_2039_pred)
+writeRaster(MIROC_R1_2039_pred, filename="output/predictions/MIROC_R1_2039/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
+
+########### MIROC_R1_6079 ###############
+
+drx <- "input/MIROC_R1_6079"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+MIROC_R1_6079 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  MIROC_R1_6079 <- stack(files.baseline_18[i], MIROC_R1_6079)
+}
+
+MIROC_R1_6079_pred <- lapply(models_simp, function(x){predict(MIROC_R1_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(MIROC_R1_6079_pred, file = "output/predictions/MIROC_R1_6079/MIROC_R1_6079_pred.RData")
+MIROC_R1_6079_pred <- stack(MIROC_R1_6079_pred)
+writeRaster(MIROC_R1_6079_pred, filename="output/predictions/MIROC_R1_6079/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
+
+########### MIROC_R2_2039 ###############
+
+drx <- "input/MIROC_R2_2039"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+MIROC_R2_2039 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  MIROC_R2_2039 <- stack(files.baseline_18[i], MIROC_R2_2039)
+}
+
+MIROC_R2_2039_pred <- lapply(models_simp, function(x){predict(MIROC_R2_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(MIROC_R2_2039_pred, file = "output/predictions/MIROC_R2_2039/MIROC_R2_2039_pred.RData")
+MIROC_R2_2039_pred <- stack(MIROC_R2_2039_pred)
+writeRaster(MIROC_R2_2039_pred, filename="output/predictions/MIROC_R2_2039/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
+
+########### MIROC_R2_6079 ###############
+
+drx <- "input/MIROC_R2_6079"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+MIROC_R2_6079 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  MIROC_R2_6079 <- stack(files.baseline_18[i], MIROC_R2_6079)
+}
+
+MIROC_R2_6079_pred <- lapply(models_simp, function(x){predict(MIROC_R2_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(MIROC_R2_6079_pred, file = "output/predictions/MIROC_R2_6079/MIROC_R2_6079_pred.RData")
+MIROC_R2_6079_pred <- stack(MIROC_R2_6079_pred)
+writeRaster(MIROC_R2_6079_pred, filename="output/predictions/MIROC_R2_6079/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
+
+########### MIROC_R3_2039 ###############
+
+drx <- "input/MIROC_R3_2039"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+MIROC_R3_2039 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  MIROC_R3_2039 <- stack(files.baseline_18[i], MIROC_R3_2039)
+}
+
+MIROC_R3_2039_pred <- lapply(models_simp, function(x){predict(MIROC_R3_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(MIROC_R3_2039_pred, file = "output/predictions/MIROC_R3_2039/MIROC_R3_2039_pred.RData")
+MIROC_R3_2039_pred <- stack(MIROC_R3_2039_pred)
+writeRaster(MIROC_R3_2039_pred, filename="output/predictions/MIROC_R3_2039/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
+
+########### MIROC_R3_6079 ###############
+
+drx <- "input/MIROC_R3_6079"
+files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
+
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+
+# Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
+#                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
+#                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
+
+MIROC_R3_6079 <- stack() 
+
+for(i in 1:length(files.baseline_18)) { 
+  MIROC_R3_6079 <- stack(files.baseline_18[i], MIROC_R3_6079)
+}
+
+MIROC_R3_6079_pred <- lapply(models_simp, function(x){predict(MIROC_R3_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
+save(MIROC_R3_6079_pred, file = "output/predictions/MIROC_R3_6079/MIROC_R3_6079_pred.RData")
+MIROC_R3_6079_pred <- stack(MIROC_R3_6079_pred)
+writeRaster(MIROC_R3_6079_pred, filename="output/predictions/MIROC_R3_6079/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
