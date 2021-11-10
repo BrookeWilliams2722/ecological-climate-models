@@ -24,6 +24,13 @@ coordinates <- st_coordinates(occurrence_NSW)
 
 coordinates <- as.data.frame(coordinates)
 
+# witholding a 20% sample for testing 
+fold <- kfold(coordinates, k=5)
+coordinatestest <- coordinates[fold == 1, ]
+coordinatestrain <- coordinates[fold != 1, ]
 
-# next -> background points
-# next -> run model 
+# fit model using 50000 random background points
+
+baseline_maxent <- maxent(baseline, coordinatestest, nbg = 50000, 
+                          path = "S://Jaramar//Otros proyectos academicos_ultima_version//RA_Koala//koala_Maxent//maxent_koalas_R//output//baseline")
+
