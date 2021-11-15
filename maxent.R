@@ -6,6 +6,7 @@ library(terra)
 
 # Read Baseline Data (predictors)  
 # Linda used 5 predictors:
+
   # o	Maximum temperature of the warmest month (BIO5) 
   # o	Annual precipitation (BIO12) 
   # o	Soil pH 
@@ -61,38 +62,38 @@ covars_train <- terra::extract(baseline,
                          list = FALSE) %>% 
                         as.data.frame()
 
-# Fit a MaxEnt model with the training parameters NO TUNNING
-maxent_notunning_baseline <- dismo::maxent(x = covars_train,
+# Fit a MaxEnt model with the training parameters NO tunING
+maxent_notuning_baseline <- dismo::maxent(x = covars_train,
                                    p = train_bground$occ,
                                    path = "output/maxent_baseline_notunning_50000")
                                    
-save(maxent_notunning_baseline, file = "output/maxent_baseline_notunning_50000/maxent_notunning_baseline.RData")
+save(maxent_notuning_baseline, file = "output/maxent_baseline_notunning_50000/maxent_notunning_baseline.RData")
 
 # Predict to the entire of NSW 
 
-predictions_notunn <- predict(maxent_notunning_baseline, baseline)
-save(predictions_notunn, file = "output/maxent_baseline_notunning_50000/prediction_notunning_baseline.RData")
+predictions_notun <- predict(maxent_notuning_baseline, baseline)
+save(predictions_notun, file = "output/maxent_baseline_notunning_50000/prediction_notunning_baseline.RData")
 
 # Compare observed data to model data
 
 # Evaluate and Find the right threshold
-eval_no_tunning <- evaluate(p = occtest,
+eval_no_tuning <- evaluate(p = occtest,
                  a = bground %>% 
                    dplyr::select(X,Y),
-                 model = maxent_notunning_baseline, 
+                 model = maxent_notuning_baseline, 
                  x = baseline) 
 
-thresh_no_tunning <- threshold(eval_no_tunning)
+thresh_no_tuning <- threshold(eval_no_tuning)
 
 # Convert predictions into binary
-pred_binary_notunn <- overlay(predictions_notunn, 
+pred_binary_notun <- overlay(predictions_notun, 
                              fun = function(x){
-                               ifelse(x <=thresh_no_tunning$spec_sens,NA,1)})
+                               ifelse(x <=thresh_no_tuning$spec_sens,NA,1)})
 
-save(pred_binary_notunn, file = "output/maxent_baseline_notunning_50000/pred_binary_notunn.RData")
+save(pred_binary_notun, file = "output/maxent_baseline_notunning_50000/pred_binary_notunn.RData")
 
 
-# TUNNING MaxEnt, using maxent_param function from Valavi et al 2021 ----
+# tunING MaxEnt, using maxent_param function from Valavi et al 2021 ----
 
 nfolds <- ifelse(sum(occtrain$occ) < 10, 2, 5) 
 
@@ -100,37 +101,37 @@ param_optim_50000 <- maxent_param(data = train_bground,
                                   k = nfolds,
                                   filepath = "output/maxent_param_50000")
 
-# Fit a MaxEnt model with the training parameters TUNNING
-maxent_tunning_baseline <- dismo::maxent(x = covars_train,
+# Fit a MaxEnt model with the training parameters tunING
+maxent_tuning_baseline <- dismo::maxent(x = covars_train,
                                            p = train_bground$occ,
                                            args = param_optim_50000,
                                            path = "output/maxent_baseline_tunning_50000")
 
-save(maxent_tunning_baseline, file = "output/maxent_baseline_tunning_50000/maxent_tunning_baseline.RData")
+save(maxent_tuning_baseline, file = "output/maxent_baseline_tunning_50000/maxent_tunning_baseline.RData")
 
 # Predict to the entire of NSW 
 
-predictions_tunned <- predict(maxent_tunning_baseline, baseline)
-save(predictions_tunned, file = "output/maxent_baseline_tunning_50000/predictions_tunned.RData")
+predictions_tuned <- predict(maxent_tuning_baseline, baseline)
+save(predictions_tuned, file = "output/maxent_baseline_tunning_50000/predictions_tunned.RData")
 
 # Compare observed data to model data
 
 # Find the right threshold
 
-eval_tunning <- evaluate(p = occtest,
+eval_tuning <- evaluate(p = occtest,
                             a = bground %>% 
                               dplyr::select(X,Y),
-                            model = maxent_tunning_baseline, 
+                            model = maxent_tuning_baseline, 
                             x = baseline) 
 
-thresh_tunning <- threshold(eval_tunning)
+thresh_tuning <- threshold(eval_tuning)
 
 # Convert model data into binary
 
-pred_binary_tunn <- overlay(predictions_tunned, 
+pred_binary_tun <- overlay(predictions_tuned, 
                              fun = function(x){
-                               ifelse(x <=thresh_tunning$spec_sens,NA,1)}) 
+                               ifelse(x <=thresh_tuning$spec_sens,NA,1)}) 
 
-save(pred_binary_tunn, file = "output/maxent_baseline_tunning_50000/pred_binary_tunn.RData")
+save(pred_binary_tun, file = "output/maxent_baseline_tunning_50000/pred_binary_tunn.RData")
 
 
