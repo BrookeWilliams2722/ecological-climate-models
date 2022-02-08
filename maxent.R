@@ -13,7 +13,25 @@ library(terra)
   # o	Soil organic carbon 
   # o	Available water capacity 
 
+setwd("S:/Jaramar/Otros proyectos academicos_ultima_version/RA_Koala/koala_Maxent/maxent_koalas_R")
+
 drx <- "data/baseline"
+
+# Change file names to make all layers match across scenarios
+
+file.rename(from = list.files(path = drx, pattern = "*soc", full.names = TRUE),
+            to = "data/baseline/soc.tif")
+file.rename(from = list.files(path = drx, pattern = "*awc", full.names = TRUE),
+            to = "data/baseline/awc.tif")
+file.rename(from = list.files(path = drx, pattern = "*ph", full.names = TRUE),
+            to = "data/baseline/ph.tif")
+file.rename(from = list.files(path = drx, pattern = "*p05", full.names = TRUE),
+            to = "data/baseline/p05.tif")
+file.rename(from = list.files(path = drx, pattern = "*p12", full.names = TRUE),
+            to = "data/baseline/p12.tif")
+
+# Create stack with all rasters
+
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 baseline <- stack() 
@@ -32,12 +50,20 @@ occ <- as.data.frame(occ)
 
 # Sample Random Background Points, 
 # selected 50000 following Valavi et al 2021 and Linda's model  
+# Points include the KMA + coast 
 
-bground <- randomPoints(baseline, 50000, p = occ, 
-                        ext=NULL, extf=1.1, excludep=TRUE, prob=FALSE, 
+# read KMA + coast layer to define extent of backgroud points
+
+kma_coast <- raster("data/extent_background_coast.tif")
+
+bground <- randomPoints(kma_coast, 50000, p = occ, 
+                        extf=1.1, excludep=TRUE, prob=FALSE, 
                         cellnumbers=FALSE, tryf=3, warn=2, lonlatCorrection=TRUE) %>% 
                         as_tibble() %>% 
                         mutate(occ = 0) 
+
+plot(bground)
+write.csv(bground,"data/bground.csv")
 names(bground) <- c("X", "Y", "occ")
 
 # Witholding a 20% sample for testing, 80% for training 
@@ -62,7 +88,7 @@ covars_train <- terra::extract(baseline,
                          list = FALSE) %>% 
                         as.data.frame()
 
-# Fit a MaxEnt model with the training parameters NO tunING
+# Fit a MaxEnt model with the training parameters NO tunING ----
 maxent_notuning_baseline <- dismo::maxent(x = covars_train,
                                    p = train_bground$occ,
                                    path = "output/maxent_baseline_notunning_50000")
@@ -99,20 +125,24 @@ nfolds <- ifelse(sum(occtrain$occ) < 10, 2, 5)
 
 param_optim_50000 <- maxent_param(data = train_bground,
                                   k = nfolds,
-                                  filepath = "output/maxent_param_50000")
+                                  filepath = "output/maxent_baseline_model")
 
-# Fit a MaxEnt model with the training parameters tunING
+save(param_optim_50000, file = "output/maxent_baseline_model/param_optim.RData")
+
+# Fit a MaxEnt model with the training parameters tunning
+
 maxent_tuning_baseline <- dismo::maxent(x = covars_train,
                                            p = train_bground$occ,
                                            args = param_optim_50000,
-                                           path = "output/maxent_baseline_tunning_50000")
+                                           path = "output/maxent_baseline_model")
 
-save(maxent_tuning_baseline, file = "output/maxent_baseline_tunning_50000/maxent_tunning_baseline.RData")
+save(maxent_tuning_baseline, file = "output/maxent_baseline_model/baseline_model.RData")
 
 # Predict to the entire of NSW 
 
 predictions_tuned <- predict(maxent_tuning_baseline, baseline)
-save(predictions_tuned, file = "output/maxent_baseline_tunning_50000/predictions_tunned.RData")
+save(predictions_tuned, file = "output/predictions/baseline.RData")
+writeRaster(predictions_tuned, filename = "output/predictions/baseline.tif")
 
 # Compare observed data to model data
 
@@ -124,6 +154,8 @@ eval_tuning <- evaluate(p = occtest,
                             model = maxent_tuning_baseline, 
                             x = baseline) 
 
+save(eval_tuning, file = "output/maxent_baseline_model/eval_tuning.RData")
+
 thresh_tuning <- threshold(eval_tuning)
 
 # Convert model data into binary
@@ -132,6 +164,5 @@ pred_binary_tun <- overlay(predictions_tuned,
                              fun = function(x){
                                ifelse(x <=thresh_tuning$spec_sens,NA,1)}) 
 
-save(pred_binary_tun, file = "output/maxent_baseline_tunning_50000/pred_binary_tunn.RData")
-
+writeRaster(pred_binary_tun, filename = "output/predictions_binary/baseline_bi.tif")
 
