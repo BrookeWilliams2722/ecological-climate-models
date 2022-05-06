@@ -38,6 +38,6 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-# We don't want to upload the input data or the results to github
+# We don't want to upload the input data or the results to github as the data sets are too large
 input/
 output/

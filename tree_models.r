@@ -1,6 +1,6 @@
 # using boosted regression trees to predict
 # distribution probabilities of 15 eucalyptus species across NSW
-# following Elith et al. 2008, A working guide to boosted regression trees 
+# following Elith et al. 2008, A working guide to boosted regression trees
 
 # load required libraries
 library(tidyverse)
@@ -10,16 +10,16 @@ library(reshape2)
 library(raster)
 library(rgdal)
 
-# set working directory
+# set working directory to the main code directory
 
-setwd("R:\\KPRIVATE19-A2212\\analysis\\ecological_climate_models")
+# setwd(" ")
 
-# load Elith et al modified functions from 'gbm' original functions   
+# load Elith et al modified functions from 'gbm' original functions
 
-source("input/brt.functions.R")
+source("brt.functions.R")
 
 ################################################################################
-# step 1 - get inputs ready for model fitting 
+# step 1 - get inputs ready for model fitting
 ################################################################################
 
 # load tree plot data
@@ -70,16 +70,16 @@ Data_Final <- TreeData %>% filter(include_site == 1) %>% dplyr::select(all_of(Sp
 # copy data as.data.frame
 data_trees <- as.data.frame(Data_Final)
 
-# turn all species names to integer 
+# turn all species names to integer
 data_trees[1:15] <- lapply(data_trees[1:15], as.integer)
 
 #########################################################################
 ### analyse input data - check total number of observations per spp ----
-no_trees <- Data_Final %>% 
-  dplyr::select(all_of(Species$PATNLabel)) %>% 
-  gather(key = "spp", value = "observation") %>% 
-  subset(observation == 1) %>% 
-  group_by(spp) %>% 
+no_trees <- Data_Final %>%
+  dplyr::select(all_of(Species$PATNLabel)) %>%
+  gather(key = "spp", value = "observation") %>%
+  subset(observation == 1) %>%
+  group_by(spp) %>%
   summarise(total_obs = n())
 ###----
 
@@ -88,7 +88,7 @@ no_trees <- Data_Final %>%
 #          test different tree complexity and learning rate parameters following Elith et al. 2008
 ######################################################################################################
 
-# the list of species 
+# the list of species
 
 # 1 Corygumm	Corymbia gummifera
 # 2 Eucabanc	Eucalyptus bancroftii
@@ -107,18 +107,18 @@ no_trees <- Data_Final %>%
 # 15 Melaquin	Melaleuca quinquenervia
 
 # tests for each spp ----
-# testing for sp 1 
-argssp1 <- list(tree.complexity = c(5,5,4,4,3,3,2,2,1,1), learning.rate = c(0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005)) 
+# testing for sp 1
+argssp1 <- list(tree.complexity = c(5,5,4,4,3,3,2,2,1,1), learning.rate = c(0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005))
 gbm.step.presp1 <- partial(gbm.step,
                            data = data_trees,
                            gbm.x = 16:33, # the variables
-                           gbm.y = 1,     # the species 
+                           gbm.y = 1,     # the species
                            family = "bernoulli",
                            bag.fraction = 0.75)
 results_sp1 <- pmap(argssp1, gbm.step.presp1)
 
-# testing for sp 2 
-argssp2 <- list(tree.complexity = c(5,5,4,4,3,3,2,2,1,1), learning.rate = c(0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005)) 
+# testing for sp 2
+argssp2 <- list(tree.complexity = c(5,5,4,4,3,3,2,2,1,1), learning.rate = c(0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005))
 gbm.step.presp2 <- partial(gbm.step,
                            data = data_trees,
                            gbm.x = 16:33,
@@ -127,8 +127,8 @@ gbm.step.presp2 <- partial(gbm.step,
                            bag.fraction = 0.75)
 results_sp2 <- pmap(argssp2, gbm.step.presp2)
 
-# testing for sp 3 
-argssp3 <- list(tree.complexity = c(5,5,4,4,3,3,2,2,1,1), learning.rate = c(0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005)) 
+# testing for sp 3
+argssp3 <- list(tree.complexity = c(5,5,4,4,3,3,2,2,1,1), learning.rate = c(0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005))
 gbm.step.presp3 <- partial(gbm.step,
                            data = data_trees,
                            gbm.x = 16:33,
@@ -138,8 +138,8 @@ gbm.step.presp3 <- partial(gbm.step,
 results_sp3 <- pmap(argssp3, gbm.step.presp3)
 
 
-# testing for sp 4 
-argssp4 <- list(tree.complexity = c(5,5,4,4,3,3,2,2,1,1), learning.rate = c(0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005)) 
+# testing for sp 4
+argssp4 <- list(tree.complexity = c(5,5,4,4,3,3,2,2,1,1), learning.rate = c(0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005))
 gbm.step.presp4 <- partial(gbm.step,
                            data = data_trees,
                            gbm.x = 16:33,
@@ -148,8 +148,8 @@ gbm.step.presp4 <- partial(gbm.step,
                            bag.fraction = 0.75)
 results_sp4 <- pmap(argssp4, gbm.step.presp4)
 
-# testing for sp 5 
-argssp5 <- list(tree.complexity = c(5,5,4,4), learning.rate = c(0.05,0.01,0.05,0.01)) 
+# testing for sp 5
+argssp5 <- list(tree.complexity = c(5,5,4,4), learning.rate = c(0.05,0.01,0.05,0.01))
 gbm.step.presp5 <- partial(gbm.step,
                            data = data_trees,
                            gbm.x = 16:33,
@@ -158,8 +158,8 @@ gbm.step.presp5 <- partial(gbm.step,
                            bag.fraction = 0.75)
 results_sp5 <- pmap(argssp5, gbm.step.presp5)
 
-# testing for sp 6 
-argssp6 <- list(tree.complexity = c(5,5,4,4,3,3,2,2,1,1), learning.rate = c(0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005)) 
+# testing for sp 6
+argssp6 <- list(tree.complexity = c(5,5,4,4,3,3,2,2,1,1), learning.rate = c(0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005))
 gbm.step.presp6 <- partial(gbm.step,
                            data = data_trees,
                            gbm.x = 16:33,
@@ -168,8 +168,8 @@ gbm.step.presp6 <- partial(gbm.step,
                            bag.fraction = 0.75)
 results_sp6 <- pmap(argssp6, gbm.step.presp6)
 
-# testing for sp 7 
-argssp7 <- list(tree.complexity = c(5,5,4,4,3,3,2,2,1,1), learning.rate = c(0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005)) 
+# testing for sp 7
+argssp7 <- list(tree.complexity = c(5,5,4,4,3,3,2,2,1,1), learning.rate = c(0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005))
 gbm.step.presp7 <- partial(gbm.step,
                            data = data_trees,
                            gbm.x = 16:33,
@@ -178,8 +178,8 @@ gbm.step.presp7 <- partial(gbm.step,
                            bag.fraction = 0.75)
 results_sp7 <- pmap(argssp7, gbm.step.presp7)
 
-# testing for sp 8 
-argssp8 <- list(tree.complexity = c(5,5,4,4,3,3,2,2,1,1), learning.rate = c(0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005)) 
+# testing for sp 8
+argssp8 <- list(tree.complexity = c(5,5,4,4,3,3,2,2,1,1), learning.rate = c(0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005,0.01,0.005))
 gbm.step.presp8 <- partial(gbm.step,
                            data = data_trees,
                            gbm.x = 16:33,
@@ -188,8 +188,8 @@ gbm.step.presp8 <- partial(gbm.step,
                            bag.fraction = 0.75)
 results_sp8 <- pmap(argssp8, gbm.step.presp8)
 
-# testing for sp 9 
-argssp9 <- list(tree.complexity = c(5,5), learning.rate = c(0.01,0.005)) 
+# testing for sp 9
+argssp9 <- list(tree.complexity = c(5,5), learning.rate = c(0.01,0.005))
 gbm.step.presp9 <- partial(gbm.step,
                            data = data_trees,
                            gbm.x = 16:33,
@@ -198,8 +198,8 @@ gbm.step.presp9 <- partial(gbm.step,
                            bag.fraction = 0.75)
 results_sp9 <- pmap(argssp9, gbm.step.presp9)
 
-# testing for sp 10 
-argssp10 <- list(tree.complexity = c(5,5,4,4), learning.rate = c(0.05,0.01,0.05,0.01)) 
+# testing for sp 10
+argssp10 <- list(tree.complexity = c(5,5,4,4), learning.rate = c(0.05,0.01,0.05,0.01))
 gbm.step.presp10 <- partial(gbm.step,
                             data = data_trees,
                             gbm.x = 16:33,
@@ -208,8 +208,8 @@ gbm.step.presp10 <- partial(gbm.step,
                             bag.fraction = 0.75)
 results_sp10 <- pmap(argssp10, gbm.step.presp10)
 
-# testing for sp 11 
-argssp11 <- list(tree.complexity = c(5,5,4,4), learning.rate = c(0.05,0.01,0.05,0.01)) 
+# testing for sp 11
+argssp11 <- list(tree.complexity = c(5,5,4,4), learning.rate = c(0.05,0.01,0.05,0.01))
 gbm.step.presp11 <- partial(gbm.step,
                             data = data_trees,
                             gbm.x = 16:33,
@@ -218,8 +218,8 @@ gbm.step.presp11 <- partial(gbm.step,
                             bag.fraction = 0.75)
 results_sp11 <- pmap(argssp11, gbm.step.presp11)
 
-# testing for sp 12 
-argssp12 <- list(tree.complexity = c(5,5), learning.rate = c(0.01,0.005)) 
+# testing for sp 12
+argssp12 <- list(tree.complexity = c(5,5), learning.rate = c(0.01,0.005))
 gbm.step.presp12 <- partial(gbm.step,
                             data = data_trees,
                             gbm.x = 16:33,
@@ -228,8 +228,8 @@ gbm.step.presp12 <- partial(gbm.step,
                             bag.fraction = 0.75)
 results_sp12 <- pmap(argssp12, gbm.step.presp12)
 
-# testing for sp 13 
-argssp13 <- list(tree.complexity = c(5,5,4,4), learning.rate = c(0.05,0.01,0.05,0.01)) 
+# testing for sp 13
+argssp13 <- list(tree.complexity = c(5,5,4,4), learning.rate = c(0.05,0.01,0.05,0.01))
 gbm.step.presp13 <- partial(gbm.step,
                             data = data_trees,
                             gbm.x = 16:33,
@@ -238,8 +238,8 @@ gbm.step.presp13 <- partial(gbm.step,
                             bag.fraction = 0.75)
 results_sp13 <- pmap(argssp13, gbm.step.presp13)
 
-# testing for sp 14 
-argssp14 <- list(tree.complexity = c(5,5), learning.rate = c(0.01,0.005)) 
+# testing for sp 14
+argssp14 <- list(tree.complexity = c(5,5), learning.rate = c(0.01,0.005))
 gbm.step.presp14 <- partial(gbm.step,
                             data = data_trees,
                             gbm.x = 16:33,
@@ -248,8 +248,8 @@ gbm.step.presp14 <- partial(gbm.step,
                             bag.fraction = 0.75)
 results_sp14 <- pmap(argssp14, gbm.step.presp14)
 
-# testing for sp 15 
-argssp15 <- list(tree.complexity = c(5,5,4,4), learning.rate = c(0.05,0.01,0.05,0.01)) 
+# testing for sp 15
+argssp15 <- list(tree.complexity = c(5,5,4,4), learning.rate = c(0.05,0.01,0.05,0.01))
 gbm.step.presp15 <- partial(gbm.step,
                             data = data_trees,
                             gbm.x = 16:33,
@@ -271,32 +271,32 @@ save(results_final, file = "output/gbm/results_final.RData")
 load("output/gbm/results_final.RData")
 
 ############################################################################################################################
-######## analyse results - extract $best.trees, $tree.complexity, $learning.rate, $deviance.mean, $deviance.se 
-########                   from all tests to identify the learning rate and tree complexity that resulted in the lowest deviance 
+######## analyse results - extract $best.trees, $tree.complexity, $learning.rate, $deviance.mean, $deviance.se
+########                   from all tests to identify the learning rate and tree complexity that resulted in the lowest deviance
 
 # flatten nested list to extract the different data
 
-summary_data <- results_final %>% flatten() %>% flatten() 
+summary_data <- results_final %>% flatten() %>% flatten()
 summary_data_gbm <- summary_data[grep("gbm.call", names(summary_data))] %>% flatten() %>% flatten()
 summary_data_cv <- summary_data[grep("cv.statistics", names(summary_data))] %>% flatten() %>% flatten()
 
 summary_data_best <- as.data.frame(summary_data_gbm[grep("best.trees", names(summary_data_gbm))])
-summary_data_best <- data.frame(t(summary_data_best)) 
+summary_data_best <- data.frame(t(summary_data_best))
 
 summary_data_tree <- as.data.frame(summary_data_gbm[grep("tree.complexity", names(summary_data_gbm))])
-summary_data_tree <- data.frame(t(summary_data_tree)) 
+summary_data_tree <- data.frame(t(summary_data_tree))
 
 summary_data_learning <- as.data.frame(summary_data_gbm[grep("learning.rate", names(summary_data_gbm))])
-summary_data_learning <- data.frame(t(summary_data_learning)) 
+summary_data_learning <- data.frame(t(summary_data_learning))
 
 summary_data_response <- as.data.frame(summary_data_gbm[grep("response.name", names(summary_data_gbm))])
-summary_data_response <- data.frame(t(summary_data_response)) 
+summary_data_response <- data.frame(t(summary_data_response))
 
 summary_data_deviance_mean <- as.data.frame(summary_data_cv[grep("deviance.mean", names(summary_data_cv))])
-summary_data_deviance_mean <- data.frame(t(summary_data_deviance_mean)) 
+summary_data_deviance_mean <- data.frame(t(summary_data_deviance_mean))
 
 summary_data_deviance_se <- as.data.frame(summary_data_cv[grep("deviance.se", names(summary_data_cv))])
-summary_data_deviance_se<- data.frame(t(summary_data_deviance_se)) 
+summary_data_deviance_se<- data.frame(t(summary_data_deviance_se))
 
 # join all data into a single dataframe
 
@@ -305,18 +305,18 @@ summary_complete <- cbind(summary_data_best, summary_data_tree, summary_data_lea
 
 # find the minimum trees, learning rate and tree ccomplexity based on minimum deviance.mean per spp
 
-optimal <- summary_complete %>% 
-  group_by(t.summary_data_response.) %>% 
-  summarise(t.summary_data_deviance_mean. = min(t.summary_data_deviance_mean.)) 
+optimal <- summary_complete %>%
+  group_by(t.summary_data_response.) %>%
+  summarise(t.summary_data_deviance_mean. = min(t.summary_data_deviance_mean.))
 
 optimal_results <- left_join(optimal, summary_complete, by = c("t.summary_data_response.", "t.summary_data_deviance_mean."))
 
-# save summary of the tree complexity and learning rate that result in the minimum deviance 
+# save summary of the tree complexity and learning rate that result in the minimum deviance
 
 save(optimal_results, file = "output/gbm/optimal_results.RData")
 write.csv(optimal_results, file = "output/gbm/optimal_results.csv")
 
-# extract optimal models from results_final based on summary above and save them as a separate element 
+# extract optimal models from results_final based on summary above and save them as a separate element
 
 eucabanc <- results_final[[1]][[2]] # first element in the list contains all the runs for x species, second element calls the model with the lowest deviance
 save(eucabanc, file = "output/gbm/optimised_complete_models/eucabanc.RData")
@@ -350,13 +350,13 @@ eucaparr <- results_final[[15]][[2]]
 save(eucaparr, file = "output/gbm/optimised_complete_models/eucaparr.RData")
 
 ######################################################################################
-########## analyse results -  to obtain the importance of the different variables use 
+########## analyse results -  to obtain the importance of the different variables use
 ##########                    example
 summary(eucabanc) # this creates a graph
 eucabanc[["contributions"]] # this prints the contributions of each variable
 
 #######################################################################################
-# step 3 - assess change in predictive deviance when dropping variables  
+# step 3 - assess change in predictive deviance when dropping variables
 #######################################################################################
 
 eucabanc.simp <- gbm.simplify(eucabanc, n.drops = 10)
@@ -398,11 +398,11 @@ eucaeuge.simp[["deviance.summary"]]
 eucaparr.simp[["pred.list"]]
 
 #################################################################################################################################
-# step 4 - re-run models with the variables that did not decrease predictive deviance (dropped variables) 
+# step 4 - re-run models with the variables that did not decrease predictive deviance (dropped variables)
 # based on summary of results in  "R:\KPRIVATE19-A2212\analysis\ecological_climate_models\output\gbm\optimal_parameters.xlsx.csv"
-# no variables dropped for eucaparr and melaquin 
-# if the simplified model does not include the data frame with the original input data 'data_trees', then append it to the gbm, 
-#     e.g. corygumm.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees   
+# no variables dropped for eucaparr and melaquin
+# if the simplified model does not include the data frame with the original input data 'data_trees', then append it to the gbm,
+#     e.g. corygumm.simp.simp[["gbm.call"]][["dataframe"]] <- data_trees
 #################################################################################################################################
 
 corygumm.simp.simp <- gbm.step(data_trees, gbm.x = corygumm.simp$pred.list[[1]], # the drop with the variables that did not decrease predictive deviance
@@ -460,28 +460,28 @@ species_names <- c("corygumm","eucabanc","eucabosi","eucadean","eucaeuge","eucag
 
 names(models_simp) <- species_names
 
-# list of the relative contribution of all variables for all spp 
+# list of the relative contribution of all variables for all spp
 
-contributions_models_simp <- melt(lapply(models_simp, '[', "contributions")) %>% 
-  pivot_wider(names_from = var, values_from = value) %>% 
+contributions_models_simp <- melt(lapply(models_simp, '[', "contributions")) %>%
+  pivot_wider(names_from = var, values_from = value) %>%
   pivot_longer(cols = cw_precipwp:dl_strmdstge2, names_to = "variables", values_to = "relative_importance")
 
 # filter to obtain the variables with the highest importance
 
-top_contributions <- contributions_models_simp %>% 
-  dplyr::select(-c(variable, L2)) %>% 
-  group_by(L1) %>% 
+top_contributions <- contributions_models_simp %>%
+  dplyr::select(-c(variable, L2)) %>%
+  group_by(L1) %>%
   slice_max(relative_importance, n=1)
 
-# the number of models for which a top variable was the highest in importance 
-frequencies <- top_contributions %>% 
-  group_by(variables) %>% 
+# the number of models for which a top variable was the highest in importance
+frequencies <- top_contributions %>%
+  group_by(variables) %>%
   summarise(frequencies = n())
 
 # the number of models for which a variable was used in the final, simplified, models
-all_frequencies <- contributions_models_simp %>% 
-  group_by(variables) %>% 
-  subset(!is.na(relative_importance)) %>% 
+all_frequencies <- contributions_models_simp %>%
+  group_by(variables) %>%
+  subset(!is.na(relative_importance)) %>%
   summarise(frequencies = n())
 
 
@@ -491,18 +491,18 @@ all_frequencies <- contributions_models_simp %>%
 
 ######### baseline scenario ############
 
-# read the tif files (variables) and save them as a raster stack 
+# read the tif files (variables) and save them as a raster stack
 
 drx <- "input/covariates_18_baseline"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-baseline_list_18 <- stack() 
+baseline_list_18 <- stack()
 
-for(i in 1:length(files.baseline)) { 
+for(i in 1:length(files.baseline)) {
   baseline_list_18 <- stack(files.baseline[i], baseline_list_18)
 }
 
-# run the predictions for all spp in the baseline scenario, save them as a list and as .tif 
+# run the predictions for all spp in the baseline scenario, save them as a list and as .tif
 
 baseline_pred <- lapply(models_simp, function(x){predict(baseline_list_18,x,n.trees=x$gbm.call$best.trees, type="response")})
 save(baseline_pred, file = "output/predictions/baseline/baseline_pred.RData")
@@ -514,15 +514,15 @@ writeRaster(baseline_pred, filename="output/predictions/baseline/baseline.tif", 
 drx <- "input/CCCMA_R1_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-CCCMA_R1_2039 <- stack() 
+CCCMA_R1_2039 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   CCCMA_R1_2039 <- stack(files.baseline_18[i], CCCMA_R1_2039)
 }
 
@@ -536,15 +536,15 @@ writeRaster(CCCMA_R1_2039_pred, filename="output/predictions/CCCMA_R1_2039/CCCMA
 drx <- "input/CCCMA_R1_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-CCCMA_R1_6079 <- stack() 
+CCCMA_R1_6079 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   CCCMA_R1_6079 <- stack(files.baseline_18[i], CCCMA_R1_6079)
 }
 
@@ -558,15 +558,15 @@ writeRaster(CCCMA_R1_6079_pred, filename="output/predictions/CCCMA_R1_6079/CCCMA
 drx <- "input/CCCMA_R2_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-CCCMA_R2_2039 <- stack() 
+CCCMA_R2_2039 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   CCCMA_R2_2039 <- stack(files.baseline_18[i], CCCMA_R2_2039)
 }
 
@@ -580,15 +580,15 @@ writeRaster(CCCMA_R2_2039_pred, filename="output/predictions/CCCMA_R2_2039/CCCMA
 drx <- "input/CCCMA_R2_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-CCCMA_R2_6079 <- stack() 
+CCCMA_R2_6079 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   CCCMA_R2_6079 <- stack(files.baseline_18[i], CCCMA_R2_6079)
 }
 
@@ -602,15 +602,15 @@ writeRaster(CCCMA_R2_6079_pred, filename="output/predictions/CCCMA_R2_6079/CCCMA
 drx <- "input/CCCMA_R3_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-CCCMA_R3_2039 <- stack() 
+CCCMA_R3_2039 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   CCCMA_R3_2039 <- stack(files.baseline_18[i], CCCMA_R3_2039)
 }
 
@@ -624,15 +624,15 @@ writeRaster(CCCMA_R3_2039_pred, filename="output/predictions/CCCMA_R3_2039/CCCMA
 drx <- "input/CCCMA_R3_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-CCCMA_R3_6079 <- stack() 
+CCCMA_R3_6079 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   CCCMA_R3_6079 <- stack(files.baseline_18[i], CCCMA_R3_6079)
 }
 
@@ -646,15 +646,15 @@ writeRaster(CCCMA_R3_6079_pred, filename="output/predictions/CCCMA_R3_6079/CCCMA
 drx <- "input/CSIRO_R1_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-CSIRO_R1_6079 <- stack() 
+CSIRO_R1_6079 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   CSIRO_R1_6079 <- stack(files.baseline_18[i], CSIRO_R1_6079)
 }
 
@@ -668,15 +668,15 @@ writeRaster(CSIRO_R1_6079_pred, filename="output/predictions/CSIRO_R1_6079/CSIRO
 drx <- "input/CSIRO_R1_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-CSIRO_R1_2039 <- stack() 
+CSIRO_R1_2039 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   CSIRO_R1_2039 <- stack(files.baseline_18[i], CSIRO_R1_2039)
 }
 
@@ -690,15 +690,15 @@ writeRaster(CSIRO_R1_2039_pred, filename="output/predictions/CSIRO_R1_2039/CSIRO
 drx <- "input/CSIRO_R2_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-CSIRO_R2_2039 <- stack() 
+CSIRO_R2_2039 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   CSIRO_R2_2039 <- stack(files.baseline_18[i], CSIRO_R2_2039)
 }
 
@@ -712,15 +712,15 @@ writeRaster(CSIRO_R2_2039_pred, filename="output/predictions/CSIRO_R2_2039/CSIRO
 drx <- "input/CSIRO_R2_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-CSIRO_R2_6079 <- stack() 
+CSIRO_R2_6079 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   CSIRO_R2_6079 <- stack(files.baseline_18[i], CSIRO_R2_6079)
 }
 
@@ -734,15 +734,15 @@ writeRaster(CSIRO_R2_6079_pred, filename="output/predictions/CSIRO_R2_6079/CSIRO
 drx <- "input/CSIRO_R3_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-CSIRO_R3_2039 <- stack() 
+CSIRO_R3_2039 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   CSIRO_R3_2039 <- stack(files.baseline_18[i], CSIRO_R3_2039)
 }
 
@@ -756,15 +756,15 @@ writeRaster(CSIRO_R3_2039_pred, filename="output/predictions/CSIRO_R3_2039/CSIRO
 drx <- "input/CSIRO_R3_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-CSIRO_R3_6079 <- stack() 
+CSIRO_R3_6079 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   CSIRO_R3_6079 <- stack(files.baseline_18[i], CSIRO_R3_6079)
 }
 
@@ -778,15 +778,15 @@ writeRaster(CSIRO_R3_6079_pred, filename="output/predictions/CSIRO_R3_6079/CSIRO
 drx <- "input/ECHAM_R1_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-ECHAM_R1_2039 <- stack() 
+ECHAM_R1_2039 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   ECHAM_R1_2039 <- stack(files.baseline_18[i], ECHAM_R1_2039)
 }
 
@@ -800,15 +800,15 @@ writeRaster(ECHAM_R1_2039_pred, filename="output/predictions/ECHAM_R1_2039/ECHAM
 drx <- "input/ECHAM_R1_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-ECHAM_R1_6079 <- stack() 
+ECHAM_R1_6079 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   ECHAM_R1_6079 <- stack(files.baseline_18[i], ECHAM_R1_6079)
 }
 
@@ -822,15 +822,15 @@ writeRaster(ECHAM_R1_6079_pred, filename="output/predictions/ECHAM_R1_6079/ECHAM
 drx <- "input/ECHAM_R2_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-ECHAM_R2_2039 <- stack() 
+ECHAM_R2_2039 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   ECHAM_R2_2039 <- stack(files.baseline_18[i], ECHAM_R2_2039)
 }
 
@@ -844,15 +844,15 @@ writeRaster(ECHAM_R2_2039_pred, filename="output/predictions/ECHAM_R2_2039/ECHAM
 drx <- "input/ECHAM_R2_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-ECHAM_R2_6079 <- stack() 
+ECHAM_R2_6079 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   ECHAM_R2_6079 <- stack(files.baseline_18[i], ECHAM_R2_6079)
 }
 
@@ -866,15 +866,15 @@ writeRaster(ECHAM_R2_6079_pred, filename="output/predictions/ECHAM_R2_6079/ECHAM
 drx <- "input/ECHAM_R3_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-ECHAM_R3_2039 <- stack() 
+ECHAM_R3_2039 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   ECHAM_R3_2039 <- stack(files.baseline_18[i], ECHAM_R3_2039)
 }
 
@@ -888,15 +888,15 @@ writeRaster(ECHAM_R3_2039_pred, filename="output/predictions/ECHAM_R3_2039/ECHAM
 drx <- "input/ECHAM_R3_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-ECHAM_R3_6079 <- stack() 
+ECHAM_R3_6079 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   ECHAM_R3_6079 <- stack(files.baseline_18[i], ECHAM_R3_6079)
 }
 
@@ -910,15 +910,15 @@ writeRaster(ECHAM_R3_6079_pred, filename="output/predictions/ECHAM_R3_6079/ECHAM
 drx <- "input/MIROC_R1_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-MIROC_R1_2039 <- stack() 
+MIROC_R1_2039 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   MIROC_R1_2039 <- stack(files.baseline_18[i], MIROC_R1_2039)
 }
 
@@ -932,15 +932,15 @@ writeRaster(MIROC_R1_2039_pred, filename="output/predictions/MIROC_R1_2039/ECHAM
 drx <- "input/MIROC_R1_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-MIROC_R1_6079 <- stack() 
+MIROC_R1_6079 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   MIROC_R1_6079 <- stack(files.baseline_18[i], MIROC_R1_6079)
 }
 
@@ -954,15 +954,15 @@ writeRaster(MIROC_R1_6079_pred, filename="output/predictions/MIROC_R1_6079/ECHAM
 drx <- "input/MIROC_R2_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-MIROC_R2_2039 <- stack() 
+MIROC_R2_2039 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   MIROC_R2_2039 <- stack(files.baseline_18[i], MIROC_R2_2039)
 }
 
@@ -976,15 +976,15 @@ writeRaster(MIROC_R2_2039_pred, filename="output/predictions/MIROC_R2_2039/ECHAM
 drx <- "input/MIROC_R2_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-MIROC_R2_6079 <- stack() 
+MIROC_R2_6079 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   MIROC_R2_6079 <- stack(files.baseline_18[i], MIROC_R2_6079)
 }
 
@@ -998,15 +998,15 @@ writeRaster(MIROC_R2_6079_pred, filename="output/predictions/MIROC_R2_6079/ECHAM
 drx <- "input/MIROC_R3_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-MIROC_R3_2039 <- stack() 
+MIROC_R3_2039 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   MIROC_R3_2039 <- stack(files.baseline_18[i], MIROC_R3_2039)
 }
 
@@ -1020,15 +1020,15 @@ writeRaster(MIROC_R3_2039_pred, filename="output/predictions/MIROC_R3_2039/ECHAM
 drx <- "input/MIROC_R3_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
-files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models 
+files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
 
 # Covariates <- c("ce_radseas", "ct_tempann", "ct_tempiso", "ct_tempmtcp", "cw_precipdp", "cw_precipwp", "sp_awc000_100", "so_ph000_100", "so_soc000_100",
 #                 "dl_strmdstge2", "dl_strmdstge6", "lf_exp315", "lf_logre10", "lf_tpi0360", "lf_tpi2000",
 #                 "sp_cly000_100prop", "sp_slt000_100prop", "sp_snd000_100prop")
 
-MIROC_R3_6079 <- stack() 
+MIROC_R3_6079 <- stack()
 
-for(i in 1:length(files.baseline_18)) { 
+for(i in 1:length(files.baseline_18)) {
   MIROC_R3_6079 <- stack(files.baseline_18[i], MIROC_R3_6079)
 }
 
