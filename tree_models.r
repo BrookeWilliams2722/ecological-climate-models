@@ -23,13 +23,13 @@ source("brt.functions.R")
 ################################################################################
 
 # load tree plot data
-TreeData <- read_csv(file = "input/tree_plot_data.csv")
+TreeData <- read_csv(file = "input/trees/tree_plot_data.csv")
 
 # load species labels
-Species_Labels <- read_csv(file = "input/species_labels.csv")
+Species_Labels <- read_csv(file = "input/trees/species_labels.csv")
 
 # load list of coastal species
-Species <- read_csv(file = "input/tree_species_list.csv")
+Species <- read_csv(file = "input/trees/tree_species_list.csv")
 
 # join species labels and select
 Species <- Species %>% left_join(Species_Labels, by = c("Species" = "SynonymName")) %>% dplyr::select(PATNLabel)
@@ -267,8 +267,8 @@ results_final <- list(results_sp1, results_sp2, results_sp3, results_sp4, result
 
 # save all results as R object and load again (to free the global environment)
 
-save(results_final, file = "output/gbm/results_final.RData")
-load("output/gbm/results_final.RData")
+save(results_final, file = "output/trees/gbm/results_final.RData")
+load("output/trees/gbm/results_final.RData")
 
 ############################################################################################################################
 ######## analyse results - extract $best.trees, $tree.complexity, $learning.rate, $deviance.mean, $deviance.se
@@ -313,41 +313,41 @@ optimal_results <- left_join(optimal, summary_complete, by = c("t.summary_data_r
 
 # save summary of the tree complexity and learning rate that result in the minimum deviance
 
-save(optimal_results, file = "output/gbm/optimal_results.RData")
-write.csv(optimal_results, file = "output/gbm/optimal_results.csv")
+save(optimal_results, file = "output/trees/gbm/optimal_results.RData")
+write.csv(optimal_results, file = "output/trees/gbm/optimal_results.csv")
 
 # extract optimal models from results_final based on summary above and save them as a separate element
 
 eucabanc <- results_final[[1]][[2]] # first element in the list contains all the runs for x species, second element calls the model with the lowest deviance
-save(eucabanc, file = "output/gbm/optimised_complete_models/eucabanc.RData")
+save(eucabanc, file = "output/trees/gbm/optimised_complete_models/eucabanc.RData")
 eucabosi <- results_final[[2]][[1]]
-save(eucabosi, file = "output/gbm/optimised_complete_models/eucabosi.RData")
+save(eucabosi, file = "output/trees/gbm/optimised_complete_models/eucabosi.RData")
 eucadean <- results_final[[3]][[1]]
-save(eucadean, file = "output/gbm/optimised_complete_models/eucadean.RData")
+save(eucadean, file = "output/trees/gbm/optimised_complete_models/eucadean.RData")
 eucagran <- results_final[[4]][[2]]
-save(eucagran, file = "output/gbm/optimised_complete_models/eucagran.RData")
+save(eucagran, file = "output/trees/gbm/optimised_complete_models/eucagran.RData")
 eucalong <- results_final[[5]][[2]]
-save(eucalong, file = "output/gbm/optimised_complete_models/eucalong.RData")
+save(eucalong, file = "output/trees/gbm/optimised_complete_models/eucalong.RData")
 eucapani <- results_final[[6]][[3]]
-save(eucapani, file = "output/gbm/optimised_complete_models/eucapani.RData")
+save(eucapani, file = "output/trees/gbm/optimised_complete_models/eucapani.RData")
 corygumm <- results_final[[7]][[8]]
-save(corygumm, file = "output/gbm/optimised_complete_models/corygumm.RData")
+save(corygumm, file = "output/trees/gbm/optimised_complete_models/corygumm.RData")
 eucaprop <- results_final[[8]][[2]]
-save(eucaprop, file = "output/gbm/optimised_complete_models/eucaprop.RData")
+save(eucaprop, file = "output/trees/gbm/optimised_complete_models/eucaprop.RData")
 eucaresi <- results_final[[9]][[2]]
-save(eucaresi, file = "output/gbm/optimised_complete_models/eucaresi.RData")
+save(eucaresi, file = "output/trees/gbm/optimised_complete_models/eucaresi.RData")
 eucarobu <- results_final[[10]][[1]]
-save(eucarobu, file = "output/gbm/optimised_complete_models/eucarobu.RData")
+save(eucarobu, file = "output/trees/gbm/optimised_complete_models/eucarobu.RData")
 eucasali <- results_final[[11]][[2]]
-save(eucasali, file = "output/gbm/optimised_complete_models/eucasali.RData")
+save(eucasali, file = "output/trees/gbm/optimised_complete_models/eucasali.RData")
 eucatric <- results_final[[12]][[2]]
-save(eucatric, file = "output/gbm/optimised_complete_models/eucatric.RData")
+save(eucatric, file = "output/trees/gbm/optimised_complete_models/eucatric.RData")
 melaquin <- results_final[[13]][[2]]
-save(melaquin, file = "output/gbm/optimised_complete_models/melaquin.RData")
+save(melaquin, file = "output/trees/gbm/optimised_complete_models/melaquin.RData")
 eucaeuge <- results_final[[14]][[2]]
-save(eucaeuge, file = "output/gbm/optimised_complete_models/eucaeuge.RData")
+save(eucaeuge, file = "output/trees/gbm/optimised_complete_models/eucaeuge.RData")
 eucaparr <- results_final[[15]][[2]]
-save(eucaparr, file = "output/gbm/optimised_complete_models/eucaparr.RData")
+save(eucaparr, file = "output/trees/gbm/optimised_complete_models/eucaparr.RData")
 
 ######################################################################################
 ########## analyse results -  to obtain the importance of the different variables use
@@ -360,35 +360,35 @@ eucabanc[["contributions"]] # this prints the contributions of each variable
 #######################################################################################
 
 eucabanc.simp <- gbm.simplify(eucabanc, n.drops = 10)
-save(eucabanc.simp, file = "output/gbm/drop_variables_models/eucabanc.simp.RData")
+save(eucabanc.simp, file = "output/trees/gbm/drop_variables_models/eucabanc.simp.RData")
 eucabosi.simp <- gbm.simplify(eucabosi, n.drops = 10)
-save(eucabosi.simp, file = "output/gbm/drop_variables_models/eucabosi.simp.RData")
+save(eucabosi.simp, file = "output/trees/gbm/drop_variables_models/eucabosi.simp.RData")
 eucadean.simp <- gbm.simplify(eucadean, n.drops = 10)
-save(eucadean.simp, file = "output/gbm/drop_variables_models/eucadean.simp.RData")
+save(eucadean.simp, file = "output/trees/gbm/drop_variables_models/eucadean.simp.RData")
 eucagran.simp <- gbm.simplify(eucagran, n.drops = 10)
-save(eucagran.simp, file = "output/gbm/drop_variables_models/eucagran.simp.RData")
+save(eucagran.simp, file = "output/trees/gbm/drop_variables_models/eucagran.simp.RData")
 eucalong.simp <- gbm.simplify(eucalong, n.drops = 10)
-save(eucalong.simp, file = "output/gbm/drop_variables_models/eucalong.simp.RData")
+save(eucalong.simp, file = "output/trees/gbm/drop_variables_models/eucalong.simp.RData")
 eucapani.simp <- gbm.simplify(eucapani, n.drops = 10)
-save(eucapani.simp, file = "output/gbm/drop_variables_models/eucapani.simp.RData")
+save(eucapani.simp, file = "output/trees/gbm/drop_variables_models/eucapani.simp.RData")
 corygumm.simp <- gbm.simplify(corygumm, n.drops = 10)
-save(corygumm.simp, file = "output/gbm/drop_variables_models/corygumm.simp.RData")
+save(corygumm.simp, file = "output/trees/gbm/drop_variables_models/corygumm.simp.RData")
 eucaprop.simp <- gbm.simplify(eucaprop, n.drops = 10)
-save(eucaprop.simp, file = "output/gbm/drop_variables_models/eucaprop.simp.RData")
+save(eucaprop.simp, file = "output/trees/gbm/drop_variables_models/eucaprop.simp.RData")
 eucaresi.simp <- gbm.simplify(eucaresi, n.drops = 10)
-save(eucaresi.simp, file = "output/gbm/drop_variables_models/eucaresi.simp.RData")
+save(eucaresi.simp, file = "output/trees/gbm/drop_variables_models/eucaresi.simp.RData")
 eucarobu.simp <- gbm.simplify(eucarobu, n.drops = 10)
-save(eucarobu.simp, file = "output/gbm/drop_variables_models/eucarobu.simp.RData")
+save(eucarobu.simp, file = "output/trees/gbm/drop_variables_models/eucarobu.simp.RData")
 eucasali.simp <- gbm.simplify(eucasali, n.drops = 10)
-save(eucasali.simp, file = "output/gbm/drop_variables_models/eucasali.simp.RData")
+save(eucasali.simp, file = "output/trees/gbm/drop_variables_models/eucasali.simp.RData")
 eucatric.simp <- gbm.simplify(eucatric, n.drops = 10)
-save(eucatric.simp, file = "output/gbm/drop_variables_models/eucatric.simp.RData")
+save(eucatric.simp, file = "output/trees/gbm/drop_variables_models/eucatric.simp.RData")
 melaquin.simp <- gbm.simplify(melaquin, n.drops = 10)
-save(melaquin.simp, file = "output/gbm/drop_variables_models/melaquin.simp.RData")
+save(melaquin.simp, file = "output/trees/gbm/drop_variables_models/melaquin.simp.RData")
 eucaeuge.simp <- gbm.simplify(eucaeuge, n.drops = 10)
-save(eucaeuge.simp, file = "output/gbm/drop_variables_models/eucaeuge.simp.RData")
+save(eucaeuge.simp, file = "output/trees/gbm/drop_variables_models/eucaeuge.simp.RData")
 eucaparr.simp <- gbm.simplify(eucaparr, n.drops = 10)
-save(eucaparr.simp, file = "output/gbm/drop_variables_models/eucaparr.simp.RData")
+save(eucaparr.simp, file = "output/trees/gbm/drop_variables_models/eucaparr.simp.RData")
 
 #########################################################################################################
 ################## to see the results, i.e., change in predictive deviance when dropping variables, use:
@@ -407,43 +407,43 @@ eucaparr.simp[["pred.list"]]
 
 corygumm.simp.simp <- gbm.step(data_trees, gbm.x = corygumm.simp$pred.list[[1]], # the drop with the variables that did not decrease predictive deviance
                                gbm.y = 1, tree.complexity = 5, learning.rate = 0.05)
-save(corygumm.simp.simp, file = "output/gbm/simplified_models/corygumm.simp.simp.RData")
+save(corygumm.simp.simp, file = "output/trees/gbm/simplified_models/corygumm.simp.simp.RData")
 
 eucabanc.simp.simp <- gbm.step(data_trees, gbm.x = eucabanc.simp$pred.list[[4]], gbm.y = 2, tree.complexity = 4, learning.rate = 0.005)
-save(eucabanc.simp.simp, file = "output/gbm/simplified_models/eucabanc.simp.simp.RData")
+save(eucabanc.simp.simp, file = "output/trees/gbm/simplified_models/eucabanc.simp.simp.RData")
 
 eucabosi.simp.simp <- gbm.step(data_trees, gbm.x = eucabosi.simp$pred.list[[9]], gbm.y = 3, tree.complexity = 5, learning.rate = 0.01)
-save(eucabosi.simp.simp, file = "output/gbm/simplified_models/eucabosi.simp.simp.RData")
+save(eucabosi.simp.simp, file = "output/trees/gbm/simplified_models/eucabosi.simp.simp.RData")
 
 eucadean.simp.simp <- gbm.step(data_trees, gbm.x = eucadean.simp$pred.list[[1]], gbm.y = 4, tree.complexity = 5, learning.rate = 0.01)
-save(eucadean.simp.simp, file = "output/gbm/simplified_models/eucadean.simp.simp.RData")
+save(eucadean.simp.simp, file = "output/trees/gbm/simplified_models/eucadean.simp.simp.RData")
 
 eucagran.simp.simp <- gbm.step(data_trees, gbm.x = eucagran.simp$pred.list[[1]], gbm.y = 6, tree.complexity = 5, learning.rate = 0.005)
-save(eucagran.simp.simp, file = "output/gbm/simplified_models/eucagran.simp.simp.RData")
+save(eucagran.simp.simp, file = "output/trees/gbm/simplified_models/eucagran.simp.simp.RData")
 
 eucalong.simp.simp <- gbm.step(data_trees, gbm.x = eucalong.simp$pred.list[[4]], gbm.y = 7, tree.complexity = 5, learning.rate = 0.005)
-save(eucalong.simp.simp, file = "output/gbm/simplified_models/eucalong.simp.simp.RData")
+save(eucalong.simp.simp, file = "output/trees/gbm/simplified_models/eucalong.simp.simp.RData")
 
 eucapani.simp.simp <- gbm.step(data_trees, gbm.x = eucapani.simp$pred.list[[9]], gbm.y = 8, tree.complexity = 4, learning.rate = 0.01)
-save(eucapani.simp.simp, file = "output/gbm/simplified_models/eucapani.simp.simp.RData")
+save(eucapani.simp.simp, file = "output/trees/gbm/simplified_models/eucapani.simp.simp.RData")
 
 eucaprop.simp.simp <- gbm.step(data_trees, gbm.x = eucaprop.simp$pred.list[[2]], gbm.y = 10, tree.complexity = 5, learning.rate = 0.01)
-save(eucaprop.simp.simp, file = "output/gbm/simplified_models/eucaprop.simp.simp.RData")
+save(eucaprop.simp.simp, file = "output/trees/gbm/simplified_models/eucaprop.simp.simp.RData")
 
 eucaresi.simp.simp <- gbm.step(data_trees, gbm.x = eucaresi.simp$pred.list[[2]], gbm.y = 11, tree.complexity = 5, learning.rate = 0.01)
-save(eucaresi.simp.simp, file = "output/gbm/simplified_models/eucaresi.simp.simp.RData")
+save(eucaresi.simp.simp, file = "output/trees/gbm/simplified_models/eucaresi.simp.simp.RData")
 
 eucaeuge.simp.simp <- gbm.step(data_trees, gbm.x = eucaeuge.simp$pred.list[[1]], gbm.y = 5, tree.complexity = 5, learning.rate = 0.01)
-save(eucaeuge.simp.simp, file = "output/gbm/simplified_models/eucaeuge.simp.simp.RData")
+save(eucaeuge.simp.simp, file = "output/trees/gbm/simplified_models/eucaeuge.simp.simp.RData")
 
 eucarobu.simp.simp <- gbm.step(data_trees, gbm.x = eucarobu.simp$pred.list[[1]], gbm.y = 12, tree.complexity = 5, learning.rate = 0.01)
-save(eucarobu.simp.simp, file = "output/gbm/simplified_models/eucarobu.simp.simp.RData")
+save(eucarobu.simp.simp, file = "output/trees/gbm/simplified_models/eucarobu.simp.simp.RData")
 
 eucasali.simp.simp <- gbm.step(data_trees, gbm.x = eucasali.simp$pred.list[[1]], gbm.y = 13, tree.complexity = 5, learning.rate = 0.01)
-save(eucasali.simp.simp, file = "output/gbm/simplified_models/eucasali.simp.simp.RData")
+save(eucasali.simp.simp, file = "output/trees/gbm/simplified_models/eucasali.simp.simp.RData")
 
 eucatric.simp.simp <- gbm.step(data_trees, gbm.x = eucatric.simp$pred.list[[2]], gbm.y = 14, tree.complexity = 5, learning.rate = 0.005)
-save(eucatric.simp.simp, file = "output/gbm/simplified_models/eucatric.simp.simp.RData")
+save(eucatric.simp.simp, file = "output/trees/gbm/simplified_models/eucatric.simp.simp.RData")
 
 #################################################################################################################################################
 ################## analyse results - to obtain summaries of the relative contribution of the different variables in the final, simplified, models
@@ -452,7 +452,7 @@ save(eucatric.simp.simp, file = "output/gbm/simplified_models/eucatric.simp.simp
 models_simp <- list(corygumm.simp.simp,eucabanc.simp.simp,eucabosi.simp.simp,eucadean.simp.simp,eucaeuge.simp.simp,
                     eucagran.simp.simp,eucalong.simp.simp,eucapani.simp.simp,eucaparr,eucaprop.simp.simp,eucaresi.simp.simp,
                     eucarobu.simp.simp,eucasali.simp.simp,eucatric.simp.simp,melaquin)
-save(models_simp, file = "output/gbm/models_simp.RData")
+save(models_simp, file = "output/trees/gbm/models_simp.RData")
 
 # add the names of the different spp to the list with the final, simplified, models
 species_names <- c("corygumm","eucabanc","eucabosi","eucadean","eucaeuge","eucagran","eucalong","eucapani","eucaparr","eucaprop","eucaresi",
@@ -493,7 +493,7 @@ all_frequencies <- contributions_models_simp %>%
 
 # read the tif files (variables) and save them as a raster stack
 
-drx <- "input/covariates_18_baseline"
+drx <- "input/trees/covariates_18_baseline"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 baseline_list_18 <- stack()
@@ -505,13 +505,13 @@ for(i in 1:length(files.baseline)) {
 # run the predictions for all spp in the baseline scenario, save them as a list and as .tif
 
 baseline_pred <- lapply(models_simp, function(x){predict(baseline_list_18,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(baseline_pred, file = "output/predictions/baseline/baseline_pred.RData")
+save(baseline_pred, file = "output/trees/predictions/baseline/baseline_pred.RData")
 baseline_pred <- stack(baseline_pred)
-writeRaster(baseline_pred, filename="output/predictions/baseline/baseline.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(baseline_pred, filename="output/trees/predictions/baseline/baseline.tif", bylayer=TRUE, suffix = species_names)
 
 ########### CCCMA_R1_2039 ###############
 
-drx <- "input/CCCMA_R1_2039"
+drx <- "input/trees/CCCMA_R1_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -527,13 +527,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 CCCMA_R1_2039_pred <- lapply(models_simp, function(x){predict(CCCMA_R1_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(CCCMA_R1_2039_pred, file = "output/predictions/CCCMA_R1_2039/CCCMA_R1_2039_pred.RData")
+save(CCCMA_R1_2039_pred, file = "output/trees/predictions/CCCMA_R1_2039/CCCMA_R1_2039_pred.RData")
 CCCMA_R1_2039_pred <- stack(CCCMA_R1_2039_pred)
-writeRaster(CCCMA_R1_2039_pred, filename="output/predictions/CCCMA_R1_2039/CCCMA_R1_2039.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(CCCMA_R1_2039_pred, filename="output/trees/predictions/CCCMA_R1_2039/CCCMA_R1_2039.tif", bylayer=TRUE, suffix = species_names)
 
 ########### CCCMA_R1_6079 ###############
 
-drx <- "input/CCCMA_R1_6079"
+drx <- "input/trees/CCCMA_R1_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -549,13 +549,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 CCCMA_R1_6079_pred <- lapply(models_simp, function(x){predict(CCCMA_R1_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(CCCMA_R1_6079_pred, file = "output/predictions/CCCMA_R1_6079/CCCMA_R1_6079_pred.RData")
+save(CCCMA_R1_6079_pred, file = "output/trees/predictions/CCCMA_R1_6079/CCCMA_R1_6079_pred.RData")
 CCCMA_R1_6079_pred <- stack(CCCMA_R1_6079_pred)
-writeRaster(CCCMA_R1_6079_pred, filename="output/predictions/CCCMA_R1_6079/CCCMA_R1_6079.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(CCCMA_R1_6079_pred, filename="output/trees/predictions/CCCMA_R1_6079/CCCMA_R1_6079.tif", bylayer=TRUE, suffix = species_names)
 
 ########### CCCMA_R2_2039 ###############
 
-drx <- "input/CCCMA_R2_2039"
+drx <- "input/trees/CCCMA_R2_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -571,13 +571,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 CCCMA_R2_2039_pred <- lapply(models_simp, function(x){predict(CCCMA_R2_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(CCCMA_R2_2039_pred, file = "output/predictions/CCCMA_R2_2039/CCCMA_R2_2039_pred.RData")
+save(CCCMA_R2_2039_pred, file = "output/trees/predictions/CCCMA_R2_2039/CCCMA_R2_2039_pred.RData")
 CCCMA_R2_2039_pred <- stack(CCCMA_R2_2039_pred)
-writeRaster(CCCMA_R2_2039_pred, filename="output/predictions/CCCMA_R2_2039/CCCMA_R2_2039.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(CCCMA_R2_2039_pred, filename="output/trees/predictions/CCCMA_R2_2039/CCCMA_R2_2039.tif", bylayer=TRUE, suffix = species_names)
 
 ########### CCCMA_R2_6079 ###############
 
-drx <- "input/CCCMA_R2_6079"
+drx <- "input/trees/CCCMA_R2_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -593,13 +593,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 CCCMA_R2_6079_pred <- lapply(models_simp, function(x){predict(CCCMA_R2_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(CCCMA_R2_6079_pred, file = "output/predictions/CCCMA_R2_6079/CCCMA_R2_6079_pred.RData")
+save(CCCMA_R2_6079_pred, file = "output/trees/predictions/CCCMA_R2_6079/CCCMA_R2_6079_pred.RData")
 CCCMA_R2_6079_pred <- stack(CCCMA_R2_6079_pred)
-writeRaster(CCCMA_R2_6079_pred, filename="output/predictions/CCCMA_R2_6079/CCCMA_R2_6079.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(CCCMA_R2_6079_pred, filename="output/trees/predictions/CCCMA_R2_6079/CCCMA_R2_6079.tif", bylayer=TRUE, suffix = species_names)
 
 ########### CCCMA_R3_2039 ###############
 
-drx <- "input/CCCMA_R3_2039"
+drx <- "input/trees/CCCMA_R3_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -615,13 +615,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 CCCMA_R3_2039_pred <- lapply(models_simp, function(x){predict(CCCMA_R3_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(CCCMA_R3_2039_pred, file = "output/predictions/CCCMA_R3_2039/CCCMA_R3_2039_pred.RData")
+save(CCCMA_R3_2039_pred, file = "output/trees/predictions/CCCMA_R3_2039/CCCMA_R3_2039_pred.RData")
 CCCMA_R3_2039_pred <- stack(CCCMA_R3_2039_pred)
-writeRaster(CCCMA_R3_2039_pred, filename="output/predictions/CCCMA_R3_2039/CCCMA_R3_2039.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(CCCMA_R3_2039_pred, filename="output/trees/predictions/CCCMA_R3_2039/CCCMA_R3_2039.tif", bylayer=TRUE, suffix = species_names)
 
 ########### CCCMA_R3_6079 ###############
 
-drx <- "input/CCCMA_R3_6079"
+drx <- "input/trees/CCCMA_R3_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -637,13 +637,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 CCCMA_R3_6079_pred <- lapply(models_simp, function(x){predict(CCCMA_R3_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(CCCMA_R3_6079_pred, file = "output/predictions/CCCMA_R3_6079/CCCMA_R3_6079_pred.RData")
+save(CCCMA_R3_6079_pred, file = "output/trees/predictions/CCCMA_R3_6079/CCCMA_R3_6079_pred.RData")
 CCCMA_R3_6079_pred <- stack(CCCMA_R3_6079_pred)
-writeRaster(CCCMA_R3_6079_pred, filename="output/predictions/CCCMA_R3_6079/CCCMA_R3_6079.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(CCCMA_R3_6079_pred, filename="output/trees/predictions/CCCMA_R3_6079/CCCMA_R3_6079.tif", bylayer=TRUE, suffix = species_names)
 
 ########### CSIRO_R1_6079 ###############
 
-drx <- "input/CSIRO_R1_6079"
+drx <- "input/trees/CSIRO_R1_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -659,13 +659,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 CSIRO_R1_6079_pred <- lapply(models_simp, function(x){predict(CSIRO_R1_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(CSIRO_R1_6079_pred, file = "output/predictions/CSIRO_R1_6079/CSIRO_R1_6079_pred.RData")
+save(CSIRO_R1_6079_pred, file = "output/trees/predictions/CSIRO_R1_6079/CSIRO_R1_6079_pred.RData")
 CSIRO_R1_6079_pred <- stack(CSIRO_R1_6079_pred)
-writeRaster(CSIRO_R1_6079_pred, filename="output/predictions/CSIRO_R1_6079/CSIRO_R1_2039.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(CSIRO_R1_6079_pred, filename="output/trees/predictions/CSIRO_R1_6079/CSIRO_R1_2039.tif", bylayer=TRUE, suffix = species_names)
 
 ########### CSIRO_R1_2039 ###############
 
-drx <- "input/CSIRO_R1_2039"
+drx <- "input/trees/CSIRO_R1_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -681,13 +681,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 CSIRO_R1_2039_pred <- lapply(models_simp, function(x){predict(CSIRO_R1_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(CSIRO_R1_2039_pred, file = "output/predictions/CSIRO_R1_2039/CSIRO_R1_2039_pred.RData")
+save(CSIRO_R1_2039_pred, file = "output/trees/predictions/CSIRO_R1_2039/CSIRO_R1_2039_pred.RData")
 CSIRO_R1_2039_pred <- stack(CSIRO_R1_2039_pred)
-writeRaster(CSIRO_R1_2039_pred, filename="output/predictions/CSIRO_R1_2039/CSIRO_R1_2039.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(CSIRO_R1_2039_pred, filename="output/trees/predictions/CSIRO_R1_2039/CSIRO_R1_2039.tif", bylayer=TRUE, suffix = species_names)
 
 ########### CSIRO_R2_2039 ###############
 
-drx <- "input/CSIRO_R2_2039"
+drx <- "input/trees/CSIRO_R2_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -703,13 +703,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 CSIRO_R2_2039_pred <- lapply(models_simp, function(x){predict(CSIRO_R2_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(CSIRO_R2_2039_pred, file = "output/predictions/CSIRO_R2_2039/CSIRO_R2_2039_pred.RData")
+save(CSIRO_R2_2039_pred, file = "output/trees/predictions/CSIRO_R2_2039/CSIRO_R2_2039_pred.RData")
 CSIRO_R2_2039_pred <- stack(CSIRO_R2_2039_pred)
-writeRaster(CSIRO_R2_2039_pred, filename="output/predictions/CSIRO_R2_2039/CSIRO_R2_2039.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(CSIRO_R2_2039_pred, filename="output/trees/predictions/CSIRO_R2_2039/CSIRO_R2_2039.tif", bylayer=TRUE, suffix = species_names)
 
 ########### CSIRO_R2_6079 ###############
 
-drx <- "input/CSIRO_R2_6079"
+drx <- "input/trees/CSIRO_R2_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -725,13 +725,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 CSIRO_R2_6079_pred <- lapply(models_simp, function(x){predict(CSIRO_R2_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(CSIRO_R2_6079_pred, file = "output/predictions/CSIRO_R2_6079/CSIRO_R2_6079_pred.RData")
+save(CSIRO_R2_6079_pred, file = "output/trees/predictions/CSIRO_R2_6079/CSIRO_R2_6079_pred.RData")
 CSIRO_R2_6079_pred <- stack(CSIRO_R2_6079_pred)
-writeRaster(CSIRO_R2_6079_pred, filename="output/predictions/CSIRO_R2_6079/CSIRO_R2_6079.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(CSIRO_R2_6079_pred, filename="output/trees/predictions/CSIRO_R2_6079/CSIRO_R2_6079.tif", bylayer=TRUE, suffix = species_names)
 
 ########### CSIRO_R3_2039 ###############
 
-drx <- "input/CSIRO_R3_2039"
+drx <- "input/trees/CSIRO_R3_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -747,13 +747,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 CSIRO_R3_2039_pred <- lapply(models_simp, function(x){predict(CSIRO_R3_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(CSIRO_R3_2039_pred, file = "output/predictions/CSIRO_R3_2039/CSIRO_R3_2039_pred.RData")
+save(CSIRO_R3_2039_pred, file = "output/trees/predictions/CSIRO_R3_2039/CSIRO_R3_2039_pred.RData")
 CSIRO_R3_2039_pred <- stack(CSIRO_R3_2039_pred)
-writeRaster(CSIRO_R3_2039_pred, filename="output/predictions/CSIRO_R3_2039/CSIRO_R3_2039.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(CSIRO_R3_2039_pred, filename="output/trees/predictions/CSIRO_R3_2039/CSIRO_R3_2039.tif", bylayer=TRUE, suffix = species_names)
 
 ########### CSIRO_R3_6079 ###############
 
-drx <- "input/CSIRO_R3_6079"
+drx <- "input/trees/CSIRO_R3_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -769,13 +769,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 CSIRO_R3_6079_pred <- lapply(models_simp, function(x){predict(CSIRO_R3_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(CSIRO_R3_6079_pred, file = "output/predictions/CSIRO_R3_6079/CSIRO_R3_6079_pred.RData")
+save(CSIRO_R3_6079_pred, file = "output/trees/predictions/CSIRO_R3_6079/CSIRO_R3_6079_pred.RData")
 CSIRO_R3_6079_pred <- stack(CSIRO_R3_6079_pred)
-writeRaster(CSIRO_R3_6079_pred, filename="output/predictions/CSIRO_R3_6079/CSIRO_R3_6079.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(CSIRO_R3_6079_pred, filename="output/trees/predictions/CSIRO_R3_6079/CSIRO_R3_6079.tif", bylayer=TRUE, suffix = species_names)
 
 ########### ECHAM_R1_2039 ###############
 
-drx <- "input/ECHAM_R1_2039"
+drx <- "input/trees/ECHAM_R1_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -791,13 +791,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 ECHAM_R1_2039_pred <- lapply(models_simp, function(x){predict(ECHAM_R1_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(ECHAM_R1_2039_pred, file = "output/predictions/ECHAM_R1_2039/ECHAM_R1_2039_pred.RData")
+save(ECHAM_R1_2039_pred, file = "output/trees/predictions/ECHAM_R1_2039/ECHAM_R1_2039_pred.RData")
 ECHAM_R1_2039_pred <- stack(ECHAM_R1_2039_pred)
-writeRaster(ECHAM_R1_2039_pred, filename="output/predictions/ECHAM_R1_2039/ECHAM_R1_2039.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(ECHAM_R1_2039_pred, filename="output/trees/predictions/ECHAM_R1_2039/ECHAM_R1_2039.tif", bylayer=TRUE, suffix = species_names)
 
 ########### ECHAM_R1_6079 ###############
 
-drx <- "input/ECHAM_R1_6079"
+drx <- "input/trees/ECHAM_R1_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -813,13 +813,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 ECHAM_R1_6079_pred <- lapply(models_simp, function(x){predict(ECHAM_R1_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(ECHAM_R1_6079_pred, file = "output/predictions/ECHAM_R1_6079/ECHAM_R1_6079_pred.RData")
+save(ECHAM_R1_6079_pred, file = "output/trees/predictions/ECHAM_R1_6079/ECHAM_R1_6079_pred.RData")
 ECHAM_R1_6079_pred <- stack(ECHAM_R1_6079_pred)
-writeRaster(ECHAM_R1_6079_pred, filename="output/predictions/ECHAM_R1_6079/ECHAM_R1_6079.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(ECHAM_R1_6079_pred, filename="output/trees/predictions/ECHAM_R1_6079/ECHAM_R1_6079.tif", bylayer=TRUE, suffix = species_names)
 
 ########### ECHAM_R2_2039 ###############
 
-drx <- "input/ECHAM_R2_2039"
+drx <- "input/trees/ECHAM_R2_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -835,13 +835,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 ECHAM_R2_2039_pred <- lapply(models_simp, function(x){predict(ECHAM_R2_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(ECHAM_R2_2039_pred, file = "output/predictions/ECHAM_R2_2039/ECHAM_R2_2039_pred.RData")
+save(ECHAM_R2_2039_pred, file = "output/trees/predictions/ECHAM_R2_2039/ECHAM_R2_2039_pred.RData")
 ECHAM_R2_2039_pred <- stack(ECHAM_R2_2039_pred)
-writeRaster(ECHAM_R2_2039_pred, filename="output/predictions/ECHAM_R2_2039/ECHAM_R2_2039.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(ECHAM_R2_2039_pred, filename="output/trees/predictions/ECHAM_R2_2039/ECHAM_R2_2039.tif", bylayer=TRUE, suffix = species_names)
 
 ########### ECHAM_R2_6079 ###############
 
-drx <- "input/ECHAM_R2_6079"
+drx <- "input/trees/ECHAM_R2_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -857,13 +857,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 ECHAM_R2_6079_pred <- lapply(models_simp, function(x){predict(ECHAM_R2_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(ECHAM_R2_6079_pred, file = "output/predictions/ECHAM_R2_6079/ECHAM_R2_6079_pred.RData")
+save(ECHAM_R2_6079_pred, file = "output/trees/predictions/ECHAM_R2_6079/ECHAM_R2_6079_pred.RData")
 ECHAM_R2_6079_pred <- stack(ECHAM_R2_6079_pred)
-writeRaster(ECHAM_R2_6079_pred, filename="output/predictions/ECHAM_R2_6079/ECHAM_R2_6079.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(ECHAM_R2_6079_pred, filename="output/trees/predictions/ECHAM_R2_6079/ECHAM_R2_6079.tif", bylayer=TRUE, suffix = species_names)
 
 ########### ECHAM_R3_2039 ###############
 
-drx <- "input/ECHAM_R3_2039"
+drx <- "input/trees/ECHAM_R3_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -879,13 +879,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 ECHAM_R3_2039_pred <- lapply(models_simp, function(x){predict(ECHAM_R3_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(ECHAM_R3_2039_pred, file = "output/predictions/ECHAM_R3_2039/ECHAM_R3_2039_pred.RData")
+save(ECHAM_R3_2039_pred, file = "output/trees/predictions/ECHAM_R3_2039/ECHAM_R3_2039_pred.RData")
 ECHAM_R3_2039_pred <- stack(ECHAM_R3_2039_pred)
-writeRaster(ECHAM_R3_2039_pred, filename="output/predictions/ECHAM_R3_2039/ECHAM_R3_2039.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(ECHAM_R3_2039_pred, filename="output/trees/predictions/ECHAM_R3_2039/ECHAM_R3_2039.tif", bylayer=TRUE, suffix = species_names)
 
 ########### ECHAM_R3_6079 ###############
 
-drx <- "input/ECHAM_R3_6079"
+drx <- "input/trees/ECHAM_R3_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -901,13 +901,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 ECHAM_R3_6079_pred <- lapply(models_simp, function(x){predict(ECHAM_R3_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(ECHAM_R3_6079_pred, file = "output/predictions/ECHAM_R3_6079/ECHAM_R3_6079_pred.RData")
+save(ECHAM_R3_6079_pred, file = "output/trees/predictions/ECHAM_R3_6079/ECHAM_R3_6079_pred.RData")
 ECHAM_R3_6079_pred <- stack(ECHAM_R3_6079_pred)
-writeRaster(ECHAM_R3_6079_pred, filename="output/predictions/ECHAM_R3_6079/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(ECHAM_R3_6079_pred, filename="output/trees/predictions/ECHAM_R3_6079/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
 
 ########### MIROC_R1_2039 ###############
 
-drx <- "input/MIROC_R1_2039"
+drx <- "input/trees/MIROC_R1_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -923,13 +923,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 MIROC_R1_2039_pred <- lapply(models_simp, function(x){predict(MIROC_R1_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(MIROC_R1_2039_pred, file = "output/predictions/MIROC_R1_2039/MIROC_R1_2039_pred.RData")
+save(MIROC_R1_2039_pred, file = "output/trees/predictions/MIROC_R1_2039/MIROC_R1_2039_pred.RData")
 MIROC_R1_2039_pred <- stack(MIROC_R1_2039_pred)
-writeRaster(MIROC_R1_2039_pred, filename="output/predictions/MIROC_R1_2039/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(MIROC_R1_2039_pred, filename="output/trees/predictions/MIROC_R1_2039/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
 
 ########### MIROC_R1_6079 ###############
 
-drx <- "input/MIROC_R1_6079"
+drx <- "input/trees/MIROC_R1_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -945,13 +945,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 MIROC_R1_6079_pred <- lapply(models_simp, function(x){predict(MIROC_R1_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(MIROC_R1_6079_pred, file = "output/predictions/MIROC_R1_6079/MIROC_R1_6079_pred.RData")
+save(MIROC_R1_6079_pred, file = "output/trees/predictions/MIROC_R1_6079/MIROC_R1_6079_pred.RData")
 MIROC_R1_6079_pred <- stack(MIROC_R1_6079_pred)
-writeRaster(MIROC_R1_6079_pred, filename="output/predictions/MIROC_R1_6079/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(MIROC_R1_6079_pred, filename="output/trees/predictions/MIROC_R1_6079/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
 
 ########### MIROC_R2_2039 ###############
 
-drx <- "input/MIROC_R2_2039"
+drx <- "input/trees/MIROC_R2_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -967,13 +967,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 MIROC_R2_2039_pred <- lapply(models_simp, function(x){predict(MIROC_R2_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(MIROC_R2_2039_pred, file = "output/predictions/MIROC_R2_2039/MIROC_R2_2039_pred.RData")
+save(MIROC_R2_2039_pred, file = "output/trees/predictions/MIROC_R2_2039/MIROC_R2_2039_pred.RData")
 MIROC_R2_2039_pred <- stack(MIROC_R2_2039_pred)
-writeRaster(MIROC_R2_2039_pred, filename="output/predictions/MIROC_R2_2039/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(MIROC_R2_2039_pred, filename="output/trees/predictions/MIROC_R2_2039/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
 
 ########### MIROC_R2_6079 ###############
 
-drx <- "input/MIROC_R2_6079"
+drx <- "input/trees/MIROC_R2_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -989,13 +989,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 MIROC_R2_6079_pred <- lapply(models_simp, function(x){predict(MIROC_R2_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(MIROC_R2_6079_pred, file = "output/predictions/MIROC_R2_6079/MIROC_R2_6079_pred.RData")
+save(MIROC_R2_6079_pred, file = "output/trees/predictions/MIROC_R2_6079/MIROC_R2_6079_pred.RData")
 MIROC_R2_6079_pred <- stack(MIROC_R2_6079_pred)
-writeRaster(MIROC_R2_6079_pred, filename="output/predictions/MIROC_R2_6079/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(MIROC_R2_6079_pred, filename="output/trees/predictions/MIROC_R2_6079/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
 
 ########### MIROC_R3_2039 ###############
 
-drx <- "input/MIROC_R3_2039"
+drx <- "input/trees/MIROC_R3_2039"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -1011,13 +1011,13 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 MIROC_R3_2039_pred <- lapply(models_simp, function(x){predict(MIROC_R3_2039,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(MIROC_R3_2039_pred, file = "output/predictions/MIROC_R3_2039/MIROC_R3_2039_pred.RData")
+save(MIROC_R3_2039_pred, file = "output/trees/predictions/MIROC_R3_2039/MIROC_R3_2039_pred.RData")
 MIROC_R3_2039_pred <- stack(MIROC_R3_2039_pred)
-writeRaster(MIROC_R3_2039_pred, filename="output/predictions/MIROC_R3_2039/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(MIROC_R3_2039_pred, filename="output/trees/predictions/MIROC_R3_2039/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
 
 ########### MIROC_R3_6079 ###############
 
-drx <- "input/MIROC_R3_6079"
+drx <- "input/trees/MIROC_R3_6079"
 files.baseline <- list.files(path = drx, pattern = "*.tif$", full.names = TRUE)
 
 files.baseline_18 <- files.baseline[c(2:7,21,19,20,9,11,14,15,17,18,22,25,26)] # select only the 18 variables used in these models
@@ -1033,6 +1033,6 @@ for(i in 1:length(files.baseline_18)) {
 }
 
 MIROC_R3_6079_pred <- lapply(models_simp, function(x){predict(MIROC_R3_6079,x,n.trees=x$gbm.call$best.trees, type="response")})
-save(MIROC_R3_6079_pred, file = "output/predictions/MIROC_R3_6079/MIROC_R3_6079_pred.RData")
+save(MIROC_R3_6079_pred, file = "output/trees/predictions/MIROC_R3_6079/MIROC_R3_6079_pred.RData")
 MIROC_R3_6079_pred <- stack(MIROC_R3_6079_pred)
-writeRaster(MIROC_R3_6079_pred, filename="output/predictions/MIROC_R3_6079/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
+writeRaster(MIROC_R3_6079_pred, filename="output/trees/predictions/MIROC_R3_6079/ECHAM_R3_6079.tif", bylayer=TRUE, suffix = species_names)
